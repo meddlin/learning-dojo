@@ -1,0 +1,11 @@
+{
+  "title": "Moving points: translate, scale, rotate",
+  "summary": "Apply the three basic 2D transformations to points using plain arithmetic and trigonometry.",
+  "concepts": ["2D points", "degrees vs radians", "<cmath> sin/cos", "rotation formula", "rotating about a pivot"],
+  "minutes": 35,
+  "hints": [
+    "`deg_to_rad` multiplies by `PI / 180.0`. `std::sin` and `std::cos` take radians, so convert before calling them.",
+    "Rotation by angle `a` (counter-clockwise, about the origin): `x' = x*cos(a) - y*sin(a)` and `y' = x*sin(a) + y*cos(a)`. Compute `cos` and `sin` once and store them, and compute both new coordinates from the *old* `x` and `y`, don't overwrite `x` before using it for `y'`.",
+    "Rotate about a pivot `p` by moving the pivot to the origin, rotating, and moving back: subtract `p` from the point, rotate, add `p`. You can write this by calling your own `translate` and `rotate` functions."
+  ]
+}

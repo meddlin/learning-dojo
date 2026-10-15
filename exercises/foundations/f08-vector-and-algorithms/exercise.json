@@ -1,0 +1,11 @@
+{
+  "title": "std::vector and the algorithms library",
+  "summary": "Range-for, iterators, lambdas, sort, erase-remove and the accumulate pitfall.",
+  "concepts": ["std::vector", "range-for", "iterators", "lambdas", "<algorithm>", "std::accumulate"],
+  "minutes": 30,
+  "hints": [
+    "`evens_squared`: build a result vector and `push_back` inside `for (int x : v)`. `max_value` can use `std::max_element`, which returns an *iterator*; dereference it with `*`, after checking the vector is not empty.",
+    "`sort_by_length` needs a *stable* sort: `std::stable_sort(words.begin(), words.end(), [](const std::string& a, const std::string& b) { return a.size() < b.size(); });`. The bracketed lambda is the comparison function.",
+    "`remove_value` uses the erase-remove idiom: `v.erase(std::remove(v.begin(), v.end(), target), v.end());`. `std::remove` only shuffles the kept elements to the front and returns the new end; `erase` actually shrinks the vector. For `average`, the type of the *third argument* of `std::accumulate` decides the type of the running sum, so pass `0.0`, not `0`."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Arrays and pointer arithmetic",
+  "summary": "Arrays decay to pointers, half-open ranges, and walking memory with two pointers.",
+  "concepts": ["array decay", "pointer arithmetic", "half-open ranges", "two pointers"],
+  "minutes": 25,
+  "hints": [
+    "A loop over a range looks like `for (const int* p = begin; p != end; ++p) { ... *p ... }`. The end pointer is one past the last element and must never be dereferenced.",
+    "For `reverse_in_place`, keep `int* left = a;` and `int* right = a + n;`. While `left < right`, step `right` back by one first, swap `*left` and `*right`, then step `left` forward.",
+    "For `partition_evens`: keep `left` and `right` pointers. If `*left` is even, advance `left`. If it is odd, move `right` back one and swap `*left` with `*right`, without advancing `left` (the swapped-in value has not been checked yet). Stop when they meet."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Transform pipelines",
+  "summary": "Rotate about a pivot, compose a list of transforms, invert a rigid motion and bound the result.",
+  "concepts": ["pivot sandwich T(p) R T(-p)", "composition order", "inverse of rotation + translation", "vector<Vec2>", "bounding box"],
+  "minutes": 50,
+  "hints": [
+    "A pivot transform is a sandwich: move the pivot to the origin, do the operation, move back. As a product, written right to left: `translation(px, py) * rotation(deg) * translation(-px, -py)`. Use `multiply` twice. `scaling_about` is the same sandwich with `scaling` in the middle.",
+    "`compose({A, B, C})` should apply A first, then B, then C, which is the matrix product `C * B * A`. Start with `result = identity3()` and for each matrix `M` in list order do `result = multiply(M, result)`: every new transform goes on the left.",
+    "A rigid motion is `p' = R p + t`. Undo it: `p = R^T (p' - t) = R^T p' + (-R^T t)`. So the inverse matrix has the transposed 2x2 rotation block in the top-left, and translation column `-(R^T t)`. For `bounding_box`, start with min = +infinity and max = -infinity (`std::numeric_limits<double>::infinity()`), or with the first point, and update with `std::min`/`std::max`."
+  ]
+}

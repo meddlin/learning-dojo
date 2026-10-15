@@ -1,0 +1,11 @@
+{
+  "title": "The heap: malloc and free",
+  "summary": "Dynamic allocation, ownership, and not leaking. C-style, with explicit casts as C++ requires.",
+  "concepts": ["stack vs heap", "malloc / calloc / free", "ownership", "sizeof", "memcpy"],
+  "minutes": 30,
+  "hints": [
+    "`duplicate_string` needs `std::strlen(s) + 1` bytes: the `+ 1` is for the terminator. Allocate, then `std::memcpy` (or `strcpy`) into the new block. In C++ the cast is required: `static_cast<char*>(malloc(bytes))`.",
+    "`make_range` needs `n * sizeof(int)` bytes. `sizeof(int)` is the size of one element, so never hard-code 4. Return `nullptr` for `n <= 0` before allocating anything.",
+    "For `grow`, `calloc(new_n, sizeof(int))` gives zeroed memory, so you only copy the old values (`memcpy`, when `old_n > 0`). Free the old block exactly once, after the copy. `free_all` frees each string first, then the array that held the pointers."
+  ]
+}

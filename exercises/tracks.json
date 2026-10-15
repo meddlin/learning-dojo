@@ -1,0 +1,17 @@
+[
+  {
+    "id": "foundations",
+    "title": "C & C++ Foundations",
+    "blurb": "Pointers, memory, strings and the standard library: the ground you need before the algorithms."
+  },
+  {
+    "id": "graphs",
+    "title": "Graph Traversal",
+    "blurb": "From adjacency lists to Dijkstra: BFS, DFS, topological sort and union-find."
+  },
+  {
+    "id": "matrices",
+    "title": "Matrices & Transforms",
+    "blurb": "Grid manipulation, multiplication, and 2D geometric transforms with homogeneous coordinates."
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "title": "C strings",
+  "summary": "Null-terminated char arrays: length, copying, comparing and in-place edits.",
+  "concepts": ["char arrays", "'\\0' terminator", "string literals", "buffer sizes"],
+  "minutes": 25,
+  "hints": [
+    "A C string ends at the first `'\\0'` byte. `my_strlen` is a loop that advances a pointer or index until it sees that byte, and returns how far it went.",
+    "`my_strcpy` must copy the terminator too, or the destination is not a valid string. After the loop that copies characters, write `*dst = '\\0';`. The test buffer is exactly the right size, so copying one byte too many will be caught.",
+    "For `is_palindrome` compute the length, then compare `s[i]` with `s[len - 1 - i]` for `i` up to the middle. For `to_upper_in_place`, `'a' - 'A'` is 32, or call `std::toupper(static_cast<unsigned char>(c))` (the cast avoids undefined behaviour for negative chars)."
+  ]
+}

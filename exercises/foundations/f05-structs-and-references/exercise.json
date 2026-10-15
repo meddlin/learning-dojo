@@ -1,0 +1,11 @@
+{
+  "title": "Structs, references and value semantics",
+  "summary": "Value types, pass by value vs reference vs const reference, and member functions.",
+  "concepts": ["struct", "T&", "const T&", "value semantics", "const member functions"],
+  "minutes": 25,
+  "hints": [
+    "Take the point by reference: `Point& p`. Then `p.x += dx;` changes the caller's point. Without the `&` you would modify a private copy.",
+    "`const Point&` parameters are read-only views of the caller's objects, with no copy. Build the result with `return {x, y};`. For `manhattan`, `std::abs` from `<cstdlib>` handles the absolute values.",
+    "For `contains`, check `p.x >= r.top_left.x && p.x < r.top_left.x + r.width`, and the same for y. In `Counter`, member functions can read and write `total_` directly; `value()` is marked `const` because it does not modify the object."
+  ]
+}

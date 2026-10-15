@@ -1,0 +1,11 @@
+{
+  "title": "Classes, new/delete and RAII",
+  "summary": "Build a growable stack that owns heap memory and cleans up after itself.",
+  "concepts": ["constructor / destructor", "new[] / delete[]", "RAII", "deleted copy", "exceptions"],
+  "minutes": 35,
+  "hints": [
+    "The constructor should allocate the first array with `new int[2]` and set `capacity_` to 2. The destructor must release it with `delete[] data_;`. Arrays allocated with `new[]` must be freed with `delete[]`, and mixing them up is undefined behaviour.",
+    "To grow: allocate a new array of `capacity_ * 2` ints, copy the `size_` elements across, `delete[]` the old array, then point `data_` at the new one and update `capacity_`. Copy before you delete.",
+    "`pop` and `top` on an empty stack must `throw std::out_of_range(\"...\");`. `pop` returns `data_[--size_]`, which shrinks the size and reads the old top in one expression. Check `size_ == 0` first."
+  ]
+}

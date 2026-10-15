@@ -1,0 +1,11 @@
+{
+  "title": "Spiral traversal",
+  "summary": "Walk a matrix in a spiral and generate one, using four shrinking boundaries.",
+  "concepts": ["boundary pointers", "loop invariants", "off-by-one edge cases", "single row/column"],
+  "minutes": 40,
+  "hints": [
+    "Keep four boundaries: `top = 0`, `bottom = rows - 1`, `left = 0`, `right = cols - 1`. Loop while `top <= bottom && left <= right`. Each pass walks the outer ring: top row left->right, then right column top->bottom, then bottom row right->left, then left column bottom->top. After each side, move that boundary inward (`++top`, `--right`, ...).",
+    "The classic bug: after the first two sides you must re-check `top <= bottom` before walking the bottom row, and `left <= right` before walking the left column. Otherwise a matrix with a single row or column gets some cells visited twice.",
+    "`spiral_matrix(n)` uses the very same walk, but instead of reading `m[r][c]` you *write* an incrementing counter: create `Matrix m(n, std::vector<int>(n))`, keep `int next = 1`, and assign `m[r][c] = next++` in each of the four loops."
+  ]
+}

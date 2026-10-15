@@ -1,0 +1,11 @@
+{
+  "title": "Hash maps and sets",
+  "summary": "unordered_map, unordered_set and optional: the tools behind most O(n) interview solutions.",
+  "concepts": ["std::unordered_map", "std::unordered_set", "operator[] inserts", "std::optional"],
+  "minutes": 30,
+  "hints": [
+    "`word_count`: `++counts[word];` is enough. `operator[]` inserts a default value (0 for `int`) when the key is missing, then you increment it.",
+    "`first_duplicate`: keep a `std::unordered_set<int> seen`. `seen.insert(x)` returns a pair whose `.second` is `false` if `x` was already present. Return `x` the moment that happens, and `std::nullopt` if the loop finishes.",
+    "`two_sum`: for each position `j`, look up `target - v[j]` in a map from value to index. If it is there, the answer is `{that index, j}`. Otherwise store `v[j]` in the map. `is_anagram`: count the letters of `a` up, the letters of `b` down, and check that every count ends at 0."
+  ]
+}

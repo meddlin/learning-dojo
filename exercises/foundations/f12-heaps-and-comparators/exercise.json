@@ -1,0 +1,11 @@
+{
+  "title": "Heaps, pairs and comparators",
+  "summary": "priority_queue as a min-heap, tuples that sort lexicographically, and custom sort orders. Dijkstra's toolkit.",
+  "concepts": ["std::priority_queue", "std::greater", "std::pair / std::tuple", "comparators"],
+  "minutes": 35,
+  "hints": [
+    "`k_smallest`: keep a *max*-heap (the default `std::priority_queue<int>`) holding the k smallest values seen so far. After pushing each value, if the heap has more than k elements, `pop()` the top, which is the largest. At the end, pop everything into a vector; it comes out largest first, so reverse it.",
+    "`merge_sorted_lists`: a min-heap needs `std::priority_queue<Item, std::vector<Item>, std::greater<Item>>`. Make `Item` a `std::tuple<int, int, int>` of (value, list index, position). Push the first element of every non-empty list. Repeatedly pop the smallest, append its value, and push the next element of the same list, if any.",
+    "`sort_by_distance`: pass `std::sort` a lambda taking two points. Compare `std::make_tuple(d2a, a.first, a.second)` with `std::make_tuple(d2b, b.first, b.second)` using `<`. Tuples compare element by element, which gives you the tie-breaking for free."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Rotating a matrix 90 degrees",
+  "summary": "Rotate with an index formula, then in place using transpose + reverse.",
+  "concepts": ["index mapping", "rotation as transpose + flip", "in-place algorithms", "std::reverse", "std::swap"],
+  "minutes": 35,
+  "hints": [
+    "Work out where one cell goes. Rotating clockwise, the first row becomes the last column: the element at `(r, c)` of an `R x C` matrix ends up at `(c, R - 1 - r)` of the `C x R` result. Allocate `Matrix out(C, std::vector<int>(R));` and assign `out[c][R - 1 - r] = m[r][c];`.",
+    "Counter-clockwise is the mirror image: `(r, c)` goes to `(C - 1 - c, r)`. Rotating 180 degrees maps `(r, c)` to `(R - 1 - r, C - 1 - c)`; you can also just rotate clockwise twice.",
+    "In place for a square matrix: rotate clockwise = **transpose, then reverse every row**. Transpose by swapping `m[r][c]` with `m[c][r]` for `c > r` only (otherwise you swap everything twice and undo it). Then `std::reverse(row.begin(), row.end())` on each row."
+  ]
+}

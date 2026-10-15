@@ -1,0 +1,11 @@
+{
+  "title": "Union-Find (disjoint sets)",
+  "summary": "Build a class that merges groups in near-constant time, then use it for Kruskal's MST.",
+  "concepts": ["disjoint set union", "path compression", "union by size", "Kruskal", "std::sort with lambda"],
+  "minutes": 45,
+  "hints": [
+    "Store two vectors: `parent` (initially `parent[i] = i`, meaning every element is its own root) and `sz` (initially all 1). Use `std::iota(parent.begin(), parent.end(), 0)` to fill the first one. Also keep a `comps` counter starting at `n`.",
+    "`find(x)`: follow `parent` until `parent[x] == x`. Add path compression by pointing nodes straight at the root on the way back: `return parent[x] = find(parent[x]);`. `unite(a, b)`: find both roots; if equal return false; otherwise attach the smaller tree under the larger, add the sizes, decrement `comps`, return true.",
+    "Kruskal: sort the edges by weight (`std::sort` with a lambda comparing `.w`), then go through them in order and keep an edge only when `unite(u, v)` returns true (it joins two different groups). Sum those weights. If you kept fewer than `n - 1` edges the graph is disconnected: return `-1`."
+  ]
+}

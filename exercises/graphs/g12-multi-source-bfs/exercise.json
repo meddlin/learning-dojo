@@ -1,0 +1,11 @@
+{
+  "title": "Multi-source BFS",
+  "summary": "Start BFS from many places at once: rotting oranges and nearest-zero distances.",
+  "concepts": ["multi-source BFS", "level-by-level processing", "grid distances", "counting remaining items"],
+  "minutes": 35,
+  "hints": [
+    "Multi-source BFS is plain BFS where the queue starts with *all* the sources (every rotten orange, every zero) at distance 0. Push them all before the loop begins; the rings then expand from all of them simultaneously.",
+    "`minutes_to_rot`: count fresh oranges while scanning and enqueue the rotten ones. When BFS rots a neighbour, decrement the fresh count and record `minute[nr][nc] = minute[r][c] + 1` (or process the queue in whole levels). The answer is the largest minute reached, but only if the fresh count ended at 0, otherwise `-1`. Remember: no fresh oranges at all means 0 minutes.",
+    "`distance_to_nearest_zero`: initialise a result grid to `-1`; every `0` cell gets distance 0 and goes in the queue. Then BFS: any neighbour still at `-1` gets `dist + 1` and is queued. Because BFS reaches a cell first from its closest source, the first assignment is the minimum."
+  ]
+}

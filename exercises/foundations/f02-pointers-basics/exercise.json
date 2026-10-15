@@ -1,0 +1,11 @@
+{
+  "title": "Pointers: addresses and out-parameters",
+  "summary": "Taking addresses, dereferencing, null checks, and returning pointers into arrays.",
+  "concepts": ["&", "*", "nullptr", "out-parameters"],
+  "minutes": 25,
+  "hints": [
+    "`*a` is \"the int that `a` points to\": you can read it and assign to it. To swap, copy one value into a temporary `int`, then overwrite, then restore from the temporary.",
+    "For `min_max`, start both results from the first element (`*out_min = values[0];`), then loop over the rest. Starting from 0 or `INT_MAX` by habit breaks on some inputs.",
+    "For `find_first`, a pointer to element `i` is `values + i` or `&values[i]`. Return that address, not the element's value. Check `p != nullptr` before dereferencing in `bump_if_positive`."
+  ]
+}

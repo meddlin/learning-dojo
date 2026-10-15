@@ -1,0 +1,11 @@
+{
+  "title": "Depth-first search (recursive)",
+  "summary": "Go as deep as possible before backtracking: pre-order, visited, reachability.",
+  "concepts": ["DFS", "recursion", "pre-order", "reachability"],
+  "minutes": 25,
+  "hints": [
+    "`dfs_visit(g, u, visited, order)` has three jobs: mark `u` visited, append `u` to `order`, then for each neighbour `v` of `u` that is not visited, call `dfs_visit` on `v`. The recursion is the stack.",
+    "`dfs_order` creates `visited` (all false) and `order` (empty), calls `dfs_visit` once from `start`, and returns `order`. Note that the helper takes both by reference so every call shares the same ones.",
+    "`reachable(g, from, to)`: run the same traversal and check whether `to` was visited, e.g. `dfs_visit` from `from`, then return `visited[to]`. (`from` reaches itself.)"
+  ]
+}

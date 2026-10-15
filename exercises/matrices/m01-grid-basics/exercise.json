@@ -1,0 +1,11 @@
+{
+  "title": "Grids as vectors of vectors",
+  "summary": "Build, transpose and summarise a 2D grid; get the row/column indexing habits right.",
+  "concepts": ["vector<vector<int>>", "rows vs columns", "transpose", "nested loops", "empty-matrix edge cases"],
+  "minutes": 25,
+  "hints": [
+    "A matrix `m` has `m.size()` rows and `m[0].size()` columns (only if there is at least one row!). Guard against the empty matrix first: `if (m.empty()) return {};`. Access is `m[row][col]`, row first.",
+    "Transpose swaps the roles: the result has `cols` rows and `rows` columns, and `t[c][r] = m[r][c]`. Allocate it first with `Matrix t(cols, std::vector<int>(rows));`, then fill it with two nested loops.",
+    "`row_sums` has one entry per row, `col_sums` one per column (`std::vector<int> sums(cols, 0)`, then add `m[r][c]` into `sums[c]`). A matrix is symmetric when it is square and `m[r][c] == m[c][r]` for every pair; you only need to compare cells above the diagonal."
+  ]
+}

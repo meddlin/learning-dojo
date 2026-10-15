@@ -1,0 +1,11 @@
+{
+  "title": "Representing a graph",
+  "summary": "Adjacency lists, directed vs undirected edges, degrees.",
+  "concepts": ["adjacency list", "directed / undirected", "degree", "vector<vector<int>>"],
+  "minutes": 20,
+  "hints": [
+    "Start with `Graph g(n);`: that creates `n` empty neighbour lists, one per vertex. Then for each edge `(u, v)`, `g[u].push_back(v)`. An undirected edge also needs `g[v].push_back(u)`.",
+    "`out_degree` is just the size of one list: `g[u].size()`, converted to `int`. `has_edge` can loop over `g[u]` looking for `v`, or use `std::find`.",
+    "`in_degrees`: make a result vector of `g.size()` zeros, then walk every list of every vertex, and for each neighbour `v` found, do `++result[v]`."
+  ]
+}

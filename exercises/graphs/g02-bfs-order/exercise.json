@@ -1,0 +1,11 @@
+{
+  "title": "Breadth-first search",
+  "summary": "Visit a graph level by level with a queue and a visited set.",
+  "concepts": ["BFS", "std::queue", "visited array", "mark on enqueue"],
+  "minutes": 25,
+  "hints": [
+    "You need three things: a `std::vector<bool> visited(g.size(), false)`, a `std::queue<int>`, and a result vector. Start by marking `start` visited, pushing it, and then loop while the queue is not empty.",
+    "Each iteration: take `u = q.front(); q.pop();`, append `u` to the result, then for each neighbour `v` in `g[u]` that is not visited yet, mark it visited **and push it right away**.",
+    "Mark vertices visited when you *enqueue* them, not when you dequeue them. If you wait until you dequeue, the same vertex can be queued several times through different parents, and you will emit duplicates or do extra work."
+  ]
+}

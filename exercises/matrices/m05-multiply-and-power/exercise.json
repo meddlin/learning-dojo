@@ -1,0 +1,11 @@
+{
+  "title": "Matrix multiplication and fast powers",
+  "summary": "Multiply matrices with three nested loops, then compute M^n in O(log n) multiplications.",
+  "concepts": ["matrix product", "dimensions must match", "exponentiation by squaring", "Fibonacci via matrices", "long long overflow"],
+  "minutes": 40,
+  "hints": [
+    "`C = A * B` where `A` is `n x k` and `B` is `k x m` gives an `n x m` matrix: `C[i][j] = sum over t of A[i][t] * B[t][j]`. That is three nested loops: `i`, `j`, and the inner sum over `t`. Create `C` zero-filled first: `Mat C(n, std::vector<long long>(m, 0));`.",
+    "Exponentiation by squaring: start with `result = identity` and `base = m`. While `exp > 0`: if `exp` is odd, `result = multiply(result, base)`; then `base = multiply(base, base)` and `exp /= 2` (or `exp >>= 1`). That is O(log exp) multiplications instead of exp of them.",
+    "For Fibonacci use `Q = {{1,1},{1,0}}`. `Q^n = {{F(n+1), F(n)}, {F(n), F(n-1)}}`, so `fibonacci(n)` is the entry `[0][1]` of `mat_pow(Q, n)`. Doing it in `long long` is exact up to `F(92)`."
+  ]
+}

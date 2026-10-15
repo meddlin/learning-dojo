@@ -1,0 +1,11 @@
+{
+  "title": "Dijkstra's shortest paths",
+  "summary": "Shortest paths with weighted edges using a priority queue.",
+  "concepts": ["weighted graphs", "priority_queue as min-heap", "relaxation", "stale entries", "INF sentinel"],
+  "minutes": 45,
+  "hints": [
+    "Keep `std::vector<long long> dist(n, INF)` with `dist[start] = 0`, and a min-heap of `(distance, vertex)` pairs: `std::priority_queue<P, std::vector<P>, std::greater<P>> pq;` where `P = std::pair<long long,int>`. Remember from the heaps exercise that the default priority_queue is a *max*-heap.",
+    "Loop: pop `(d, u)`. If `d > dist[u]` this entry is stale (a better route was found after it was pushed): `continue`. Otherwise relax each edge `(v, w)` of `u`: if `dist[u] + w < dist[v]`, set `dist[v]` and push `(dist[v], v)`.",
+    "Never add to `INF` itself (that can overflow). It is safe here because you only expand vertices you popped, whose `dist` is finite. For `dijkstra_path`, also keep `parent[v] = u` whenever you improve `dist[v]`, then walk back from the target and reverse, exactly like in the unweighted exercise."
+  ]
+}

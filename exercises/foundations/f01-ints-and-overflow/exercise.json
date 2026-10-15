@@ -1,0 +1,11 @@
+{
+  "title": "Integers, overflow and undefined behaviour",
+  "summary": "Fixed-size integers, why signed overflow is undefined, and safe bit shifting.",
+  "concepts": ["int vs unsigned", "undefined behaviour", "<climits>", "bit shifts"],
+  "minutes": 20,
+  "hints": [
+    "For `add_overflows`: ask how much room is left between `a` and `INT_MAX` (or `INT_MIN`). You can compute that room without overflowing. Which limit matters depends on the sign of `b`.",
+    "For `digit_sum`: you cannot negate `INT_MIN` while it is an `int`. Is there a wider type you could convert to first, before taking the absolute value? `long long` holds at least 64 bits.",
+    "For `rotate_left`: shifting a 32-bit value by 32 or more is undefined. Reduce `k` with `%` first, then treat `k == 0` separately, because `x >> (32 - 0)` is itself a shift by 32."
+  ]
+}

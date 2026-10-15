@@ -1,0 +1,11 @@
+{
+  "title": "Cycle detection",
+  "summary": "Spot cycles in undirected graphs (parent trick) and directed graphs (three colours).",
+  "concepts": ["cycles", "parent tracking", "DFS colouring", "recursion stack", "back edge"],
+  "minutes": 40,
+  "hints": [
+    "Undirected: run DFS carrying the `parent` you came from. If you meet a neighbour `v` that is already visited and `v != parent`, you have found a cycle. Remember that every undirected edge is stored twice, so the edge back to your parent is not a cycle. Start a new DFS from each unvisited vertex, since the graph may be disconnected.",
+    "Directed: 'already visited' is not enough. `A -> B` and `A -> C -> B` visits B twice without any cycle. Give each vertex a state: 0 = not seen, 1 = on the current DFS path (in progress), 2 = finished. Meeting a vertex in state 1 means you walked back into your own path: that is a cycle.",
+    "In the directed DFS: set `state[u] = 1` on entry, recurse into each neighbour (return true if one is state 1 or if the recursion finds a cycle), and set `state[u] = 2` just before returning false. A self-loop `u -> u` is a cycle and the three-colour rule catches it automatically."
+  ]
+}

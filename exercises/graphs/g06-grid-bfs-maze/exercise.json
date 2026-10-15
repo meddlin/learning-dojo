@@ -1,0 +1,11 @@
+{
+  "title": "BFS on a grid: solving a maze",
+  "summary": "Treat grid cells as vertices and the four neighbours as edges.",
+  "concepts": ["implicit graphs", "grid neighbours", "bounds checking", "std::pair", "BFS with distances"],
+  "minutes": 35,
+  "hints": [
+    "Write `neighbors` first. Offsets in the required order: up `(-1,0)`, right `(0,+1)`, down `(+1,0)`, left `(0,-1)`. Loop over them, compute `nr = r + dr`, `nc = c + dc`, and keep it only if `0 <= nr < rows`, `0 <= nc < cols` and `grid[nr][nc] != '#'`.",
+    "Find `S` and `E` by scanning the grid. Then run BFS exactly like the plain-graph version, but the 'vertex' is a `std::pair<int,int>` (or a single index `r * cols + c`) and the 'adjacency list' is your `neighbors` function. A `std::vector<std::vector<int>> dist(rows, std::vector<int>(cols, -1))` serves as both distance and visited.",
+    "Return `dist[er][ec]` when you pop or discover `E`; if the queue empties first there is no route, so return `-1`. Edge cases: no `S` or `E` in the grid, and `S` next to `E`."
+  ]
+}

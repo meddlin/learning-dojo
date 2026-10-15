@@ -1,0 +1,11 @@
+{
+  "title": "std::stack and std::queue",
+  "summary": "LIFO versus FIFO with the standard adapters: the data structures behind DFS and BFS.",
+  "concepts": ["std::stack", "std::queue", "LIFO / FIFO", "pop() returns void"],
+  "minutes": 25,
+  "hints": [
+    "`balanced_brackets`: push every opening bracket. On a closing bracket the stack must be non-empty and its top must be the matching opener; pop it. At the end the stack must be empty. Always check `empty()` before calling `top()` or `pop()`.",
+    "`evaluate_rpn`: push numbers; on an operator pop the **right** operand first (`b`), then the left (`a`), and push `a op b`. Order matters for `-` and `/`. A token is a number if it is longer than one character (like \"-11\") or its first character is a digit. Convert with `std::stoi`.",
+    "`last_survivor`: fill a `std::queue<int>` with 1..n. While more than one person is left: do `k - 1` times `q.push(q.front()); q.pop();` (they survive this round and go to the back), then `q.pop()` once to remove the k-th person. Return `q.front()`."
+  ]
+}

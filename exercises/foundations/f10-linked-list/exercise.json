@@ -1,0 +1,11 @@
+{
+  "title": "A singly linked list",
+  "summary": "Nodes linked by pointers: building, reversing, deleting and freeing without leaks.",
+  "concepts": ["self-referential structs", "pointer rewiring", "delete", "pointer-to-pointer"],
+  "minutes": 35,
+  "hints": [
+    "`push_front` is one line: `return new ListNode{value, head};`. That allocates a node whose `next` is the old head. For `free_list`, copy `head->next` into a variable *before* you `delete head`; after the delete the node no longer exists.",
+    "`reverse_list` walks the list with three pointers: `prev` (starts `nullptr`), `curr` (starts at `head`) and `next`. Each step: save `next = curr->next`, point `curr->next` at `prev`, then advance `prev = curr; curr = next`. When `curr` is null, `prev` is the new head.",
+    "For `remove_value` the awkward case is deleting the head. A neat trick: keep a pointer *to the link that points at the current node*, `ListNode** link = &head;`. If `(*link)->value == target`, set `*link` to the node's `next` and delete the node; otherwise move `link = &(*link)->next`. No special case for the head."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "A Matrix class with flat storage",
+  "summary": "Store a matrix in one contiguous vector using row-major indexing, behind a clean class interface.",
+  "concepts": ["row-major layout", "index = r * cols + c", "operator()", "const overloads", "static member function", "operator=="],
+  "minutes": 40,
+  "hints": [
+    "Keep three members: `int rows_`, `int cols_` and `std::vector<double> data_` of size `rows * cols`. The constructor can use an initializer list: `Matrix(int rows, int cols, double fill = 0.0) : rows_(rows), cols_(cols), data_(rows * cols, fill) {}`.",
+    "Row-major means row 0 is stored first, then row 1, and so on, so cell `(r, c)` lives at index `r * cols_ + c`. `operator()` returns a reference into `data_` at that index. You need two versions: a non-const one returning `double&`, and a const one returning `const double&` so that read-only matrices (`const Matrix&`) can be indexed too.",
+    "`transposed()` builds a new `Matrix(cols_, rows_)` and copies `t(c, r) = (*this)(r, c)`. `identity(n)` is `static`: create `Matrix m(n, n)` and set the diagonal to 1. For `operator==`, compare `rows_`, `cols_` and `data_` (vectors already compare element by element with `==`)."
+  ]
+}
