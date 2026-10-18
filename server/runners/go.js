@@ -13,10 +13,10 @@ const { EventEmitter } = require('events');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { ROOT } = require('./curriculum');
+const { ROOT } = require('../lib/curriculum');
 
-const INCLUDE_DIR = path.join(ROOT, 'include');
-const BUILD_DIR = path.join(ROOT, 'build');
+const INCLUDE_DIR = path.join(ROOT, 'languages', 'go', 'include');
+const BUILD_DIR = path.join(ROOT, 'build', 'go');
 
 const MIN_GO_MINOR = 22; // loop-variable semantics, range over int
 const PER_TEST_TIMEOUT_MS = 8_000;

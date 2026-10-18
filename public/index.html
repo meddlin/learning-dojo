@@ -3,18 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>C++ Dojo</title>
+  <title>Dojo</title>
   <link rel="stylesheet" href="/vendor/xterm/css/xterm.css">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><span class="brand-mark">{ }</span> C++ Dojo</div>
+    <div class="brand"><span class="brand-mark">{ }</span> Dojo</div>
+    <div class="lang-switch" id="lang-switch" role="tablist" aria-label="Language"></div>
     <div class="crumb" id="crumb"></div>
     <div class="chips">
       <span class="chip" id="chip-progress" title="Solved exercises"></span>
-      <span class="chip" id="chip-compiler" title="Compiler used for Run and Test"></span>
+      <span class="chip" id="chip-compiler" title="Compiler or toolchain used for Run and Test"></span>
       <span class="chip" id="chip-tutor" title="Tutor model (Ollama)"></span>
     </div>
   </header>
@@ -42,6 +43,7 @@
       <div class="toolbar">
         <button class="btn primary" id="btn-test" title="Run the exercise's tests (Ctrl/Cmd+Enter)">Run tests</button>
         <button class="btn" id="btn-run" title="Run your own main() (Ctrl/Cmd+Shift+Enter)">Run</button>
+        <button class="btn ghost hidden" id="btn-format" title="Format the file with gofmt (Shift+Alt+F)">gofmt</button>
         <button class="btn danger hidden" id="btn-stop" title="Stop the running program (Ctrl+C in the terminal)">Stop</button>
         <span class="spacer"></span>
         <label class="toggle" title="Autocomplete is off by default so you practise recalling syntax"><input type="checkbox" id="opt-suggest"> Autocomplete</label>

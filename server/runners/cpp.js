@@ -7,10 +7,10 @@ const { EventEmitter } = require('events');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { ROOT } = require('./curriculum');
+const { ROOT } = require('../lib/curriculum');
 
-const INCLUDE_DIR = path.join(ROOT, 'include');
-const BUILD_DIR = path.join(ROOT, 'build');
+const INCLUDE_DIR = path.join(ROOT, 'languages', 'cpp', 'include');
+const BUILD_DIR = path.join(ROOT, 'build', 'cpp');
 
 const TEST_TIMEOUT_MS = 10_000;
 const RUN_TIMEOUT_MS = 60_000;

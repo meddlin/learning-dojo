@@ -22,8 +22,13 @@ function h(tag, props = {}, ...kids) {
   return el;
 }
 
+// Every request says which language's exercises it is about.
+function apiUrl(url) {
+  return `${url}${url.includes('?') ? '&' : '?'}lang=${encodeURIComponent(state.lang)}`;
+}
+
 async function api(method, url, body) {
-  const res = await fetch(url, {
+  const res = await fetch(apiUrl(url), {
     method,
     headers: body !== undefined ? { 'Content-Type': 'application/json' } : {},
     body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -57,6 +62,8 @@ const store = {
 };
 
 const state = {
+  lang: 'cpp',
+  languageInfo: null,
   tracks: [],
   current: null,
   monaco: null,
@@ -134,7 +141,7 @@ function suggestOptions(on) {
   };
 }
 
-function setupEditor(monaco) {
+function setupEditor(monaco, info) {
   monaco.editor.defineTheme('dojo', {
     base: 'vs-dark',
     inherit: true,
@@ -150,14 +157,15 @@ function setupEditor(monaco) {
   $('#opt-suggest').checked = suggest;
   state.editor = monaco.editor.create($('#editor'), {
     theme: 'dojo',
-    language: 'cpp',
+    language: info.monaco,
     automaticLayout: true,
     minimap: { enabled: false },
     fontSize: 14,
     fontFamily: 'SF Mono, ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace',
     scrollBeyondLastLine: false,
     tabSize: 4,
-    insertSpaces: true,
+    insertSpaces: info.insertSpaces,
+    detectIndentation: info.insertSpaces,
     renderWhitespace: 'none',
     padding: { top: 10 },
     smoothScrolling: true,
@@ -169,6 +177,27 @@ function setupEditor(monaco) {
   });
   state.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => startJob('test'));
   state.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter, () => startJob('run'));
+  if (info.canFormat) state.editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF, () => formatCode());
+}
+
+// gofmt: the one true layout. Leaves the code alone (and says why) if it does not parse yet.
+async function formatCode() {
+  if (!state.current) return;
+  const model = state.models.get(state.current.id);
+  try {
+    const r = await api('POST', '/api/format', { code: model.getValue() });
+    if (r.error) {
+      state.term.writeln(`\x1b[33mgofmt could not format the file yet:\x1b[0m\r\n${r.error.replace(/\n/g, '\r\n')}`);
+      return;
+    }
+    if (r.code !== model.getValue()) {
+      state.editor.executeEdits('gofmt', [{ range: model.getFullModelRange(), text: r.code }]);
+      state.editor.pushUndoStop();
+    }
+    setSaveState('Formatted');
+  } catch (e) {
+    state.term.writeln(`\x1b[31m${e.message}\x1b[0m`);
+  }
 }
 
 function setSaveState(text) {
@@ -202,7 +231,7 @@ window.addEventListener('pagehide', () => {
   if (!state.saveTimer || !state.current) return;
   const model = state.models.get(state.current.id);
   if (model) {
-    fetch(`/api/exercise/${state.current.id}/code`, {
+    fetch(apiUrl(`/api/exercise/${state.current.id}/code`), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: model.getValue() }),
@@ -352,7 +381,7 @@ async function startJob(kind) {
   state.lastOutput = '';
   state.term.reset();
   renderToolbar();
-  wsSend({ type: kind, exerciseId: state.current.id, code: state.editor.getValue() });
+  wsSend({ type: kind, lang: state.lang, exerciseId: state.current.id, code: state.editor.getValue() });
   if (kind === 'run') state.term.focus();
 }
 
@@ -446,9 +475,9 @@ async function colorize(root) {
   if (!state.monaco) return;
   for (const code of $$('pre code[data-lang]', root)) {
     const lang = code.dataset.lang.toLowerCase();
-    if (!['cpp', 'c++', 'c', 'h', 'hpp', 'cc'].includes(lang)) continue;
+    if (!state.languageInfo.fenceTags.includes(lang)) continue;
     try {
-      code.innerHTML = await state.monaco.editor.colorize(code.textContent, 'cpp', { tabSize: 4 });
+      code.innerHTML = await state.monaco.editor.colorize(code.textContent, state.languageInfo.monaco, { tabSize: 4 });
     } catch {
       /* leave plain */
     }
@@ -584,7 +613,7 @@ async function revealReference() {
   try {
     const r = await api('POST', `/api/exercise/${state.current.id}/reveal`, { confirm: true });
     updateProgress(state.current.id, r.progress);
-    showDialog('Reference solution', `\`\`\`cpp\n${r.code}\n\`\`\`\n\nRead it, close it, then write it again from memory in your own file.`);
+    showDialog('Reference solution', `\`\`\`${state.languageInfo.fenceTags[0]}\n${r.code}\n\`\`\`\n\nRead it, close it, then write it again from memory in your own file.`);
   } catch (e) {
     alert(e.message);
   }
@@ -597,6 +626,7 @@ function renderToolbar() {
   $('#btn-run').disabled = busy || !state.current;
   $('#btn-stop').classList.toggle('hidden', !busy);
   $('#btn-reset').disabled = busy || !state.current;
+  $('#btn-format').disabled = busy || !state.current;
   const review = $('#btn-review');
   const canReview = p && (p.status === 'solved' || p.status === 'review-due');
   review.classList.toggle('hidden', !canReview);
@@ -640,10 +670,10 @@ async function openExercise(id) {
     return;
   }
   state.current = ex;
-  store.set('dojo.last', id);
+  store.set(`dojo.last.${state.lang}`, id);
   let model = state.models.get(id);
   if (!model) {
-    model = state.monaco.editor.createModel(ex.code, 'cpp');
+    model = state.monaco.editor.createModel(ex.code, state.languageInfo.monaco);
     model.onDidChangeContent(() => onEdit(id));
     state.models.set(id, model);
   }
@@ -658,20 +688,20 @@ async function openExercise(id) {
 // tutor chat
 // ---------------------------------------------------------------------------
 
-const QUICK = [
+const quickQuestions = () => [
   "I'm stuck. Where should I start?",
   'Explain the compiler error',
   'Is my approach reasonable?',
-  'Which C++ concept am I missing?',
+  `Which ${state.languageInfo.label} concept am I missing?`,
 ];
 
 function chatMessages(id) {
-  if (!state.chat.byExercise[id]) state.chat.byExercise[id] = store.get(`dojo.chat.${id}`, []);
+  if (!state.chat.byExercise[id]) state.chat.byExercise[id] = store.get(`dojo.chat.${state.lang}.${id}`, []);
   return state.chat.byExercise[id];
 }
 
 function persistChat(id) {
-  store.set(`dojo.chat.${id}`, chatMessages(id).filter((m) => m.role !== 'error').slice(-30));
+  store.set(`dojo.chat.${state.lang}.${id}`, chatMessages(id).filter((m) => m.role !== 'error').slice(-30));
 }
 
 function bubble(msg, streaming = false) {
@@ -690,7 +720,7 @@ function renderChat() {
     log.append(
       h('div', {
         class: 'empty',
-        text: 'Ask about this exercise, a compiler error, or any C++ concept. In Socratic mode the tutor asks questions and nudges you rather than handing over the answer.',
+        text: `Ask about this exercise, a compiler error, or any ${state.languageInfo.label} concept. In Socratic mode the tutor asks questions and nudges you rather than handing over the answer.`,
       }),
     );
   }
@@ -762,7 +792,7 @@ async function sendChat(text) {
   };
 
   try {
-    const res = await fetch('/api/chat', {
+    const res = await fetch(apiUrl('/api/chat'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -815,7 +845,7 @@ function setupChat(settings) {
     api('PUT', '/api/settings', { mode: b.dataset.mode }).catch(() => {});
   });
 
-  $('#quick').append(...QUICK.map((q) => h('button', { onclick: () => sendChat(q), text: q })));
+  $('#quick').append(...quickQuestions().map((q) => h('button', { onclick: () => sendChat(q), text: q })));
   $('#btn-send').addEventListener('click', () => sendChat($('#chat-input').value));
   $('#btn-chat-stop').addEventListener('click', () => state.chat.controller && state.chat.controller.abort());
   $('#chat-input').addEventListener('keydown', (e) => {
@@ -876,6 +906,42 @@ function showFatal(message) {
   document.body.append(h('pre', { style: 'padding:24px;color:#f7768e;white-space:pre-wrap;font:14px monospace', text: message }));
 }
 
+// ?lang=go wins (and is remembered), then the last language used, then the server default.
+function pickLanguage(languages) {
+  const ids = languages.languages.map((l) => l.id);
+  const wanted = new URLSearchParams(location.search).get('lang') || store.get('dojo.lang', null);
+  return ids.includes(wanted) ? wanted : languages.default;
+}
+
+function renderLanguageSwitch(list) {
+  const box = $('#lang-switch');
+  box.textContent = '';
+  for (const l of list) {
+    box.append(
+      h('button', {
+        class: `lang-btn${l.id === state.lang ? ' active' : ''}`,
+        role: 'tab',
+        'aria-selected': String(l.id === state.lang),
+        title: `Switch to ${l.label} exercises`,
+        text: l.label,
+        onclick: () => switchLanguage(l.id),
+      }),
+    );
+  }
+}
+
+// Each language has its own exercises, editor state and chat, so switching reloads the page
+// (after saving what you were typing).
+async function switchLanguage(id) {
+  if (id === state.lang) return;
+  if (state.running) stopJob();
+  await flushSave();
+  store.set('dojo.lang', id);
+  const url = new URL(location.href);
+  url.searchParams.set('lang', id);
+  location.assign(url);
+}
+
 async function init() {
   setupLayout();
   $$('.tab').forEach((t) => t.addEventListener('click', () => showTab(t.dataset.tab)));
@@ -884,6 +950,7 @@ async function init() {
   $('#btn-stop').addEventListener('click', stopJob);
   $('#btn-reset').addEventListener('click', resetExercise);
   $('#btn-review').addEventListener('click', startReview);
+  $('#btn-format').addEventListener('click', formatCode);
   $('#btn-clear').addEventListener('click', () => state.term.reset());
   $('#dlg-close').addEventListener('click', () => $('#dlg').close());
   document.addEventListener('keydown', (e) => {
@@ -893,21 +960,38 @@ async function init() {
     }
   });
 
+  const languages = await api('GET', '/api/languages');
+  state.lang = pickLanguage(languages);
+  store.set('dojo.lang', state.lang);
+  renderLanguageSwitch(languages.languages);
+
   try {
     state.monaco = await loadMonaco();
   } catch (e) {
     return showFatal(`${e.message}\n\nRun "npm install" in the project folder, then restart the server.`);
   }
-  setupEditor(state.monaco);
-  setupTerminal();
-
   const [status, curriculum] = await Promise.all([api('GET', '/api/status'), api('GET', '/api/curriculum')]);
+  state.languageInfo = status.language;
+  document.title = `${status.language.label} Dojo`;
+  $('#btn-format').classList.toggle('hidden', !status.language.canFormat);
+  setupEditor(state.monaco, status.language);
+  setupTerminal();
   state.tracks = curriculum.tracks;
   const cc = $('#chip-compiler');
   if (status.compiler) {
-    cc.textContent = `${status.compiler.name} · ${status.compiler.std}${status.compiler.sanitizers ? ' · sanitizers' : ''}`;
-    cc.className = `chip ${status.compiler.sanitizers ? 'ok' : 'warn'}`;
-    cc.title = status.compiler.version + (status.compiler.sanitizers ? '' : ' (sanitizers unavailable: memory and undefined-behaviour errors will not be caught)');
+    if (state.lang === 'go') {
+      cc.textContent = `${status.compiler.std}${status.compiler.race ? ' · race detector' : ''}`;
+      cc.className = `chip ${status.compiler.race ? 'ok' : 'warn'}`;
+      cc.title = status.compiler.version + (status.compiler.race ? '' : ' (race detector unavailable: it needs cgo and a C compiler, so data races will not be caught)');
+    } else {
+      cc.textContent = `${status.compiler.name} · ${status.compiler.std}${status.compiler.sanitizers ? ' · sanitizers' : ''}`;
+      cc.className = `chip ${status.compiler.sanitizers ? 'ok' : 'warn'}`;
+      cc.title = status.compiler.version + (status.compiler.sanitizers ? '' : ' (sanitizers unavailable: memory and undefined-behaviour errors will not be caught)');
+    }
+  } else if (state.lang === 'go') {
+    cc.textContent = 'no Go found';
+    cc.className = 'chip bad';
+    state.term.writeln(`\x1b[31m${status.problem || 'No Go toolchain found.'} Install Go 1.22+ from https://go.dev/dl/ (or: brew install go), then restart the server.\x1b[0m`);
   } else {
     cc.textContent = 'no compiler found';
     cc.className = 'chip bad';
@@ -920,7 +1004,7 @@ async function init() {
 
   const all = allExercises();
   if (!all.length) return showFatal('No exercises found in the exercises/ folder.');
-  const last = store.get('dojo.last', null);
+  const last = store.get(`dojo.last.${state.lang}`, null);
   const start = all.find((e) => e.id === last) || all.find((e) => e.progress.status !== 'solved') || all[0];
   await openExercise(start.id);
 }
