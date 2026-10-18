@@ -1,0 +1,16 @@
+{
+  "title": "Shortest paths without weights",
+  "summary": "Use BFS distances and parent pointers to find the fewest-edges route.",
+  "concepts": [
+    "BFS distances",
+    "parent slice",
+    "path reconstruction",
+    "slices.Reverse"
+  ],
+  "minutes": 30,
+  "hints": [
+    "BFS already knows the distance: when you discover `v` from `u`, `dist[v] = dist[u] + 1`. Start with a `dist` slice of `len(g)` entries all set to `-1` (a loop does it); `-1` doubles as the 'not visited' marker, so you do not need a separate visited slice.",
+    "For `ShortestPath`, run the same BFS but also record `parent[v] = u` at the moment you discover `v`. You can stop early once `target` is discovered.",
+    "To rebuild the path, walk backwards from `target` following `parent` until you reach `start`, appending each vertex, then `slices.Reverse(path)`. Handle `start == target` (path is just `[start]`) and an unreachable target (return nil)."
+  ]
+}

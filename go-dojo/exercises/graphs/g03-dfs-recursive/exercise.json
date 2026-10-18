@@ -1,0 +1,17 @@
+{
+  "title": "Depth-first search (recursive)",
+  "summary": "Go as deep as possible before backtracking: pre-order, visited, reachability.",
+  "concepts": [
+    "DFS",
+    "recursion",
+    "pre-order",
+    "reachability",
+    "closures"
+  ],
+  "minutes": 25,
+  "hints": [
+    "A visit function has three jobs: mark `u` visited, append `u` to the order, then for each neighbour `v` of `u` that is not visited, call itself on `v`. The recursion is the stack.",
+    "`DFSOrder` creates `visited` (all false) and `order` (nil), then starts one visit from `start`. The recursive helper has to share `visited` and `order` between calls. Either pass them as arguments (`order` as a `*[]int`, because `append` may reallocate), or declare the helper as a closure inside `DFSOrder`, `var visit func(u int)`, so it can see the variables around it.",
+    "`Reachable(g, from, to)`: run the same traversal from `from` and check whether `to` was visited. (`from` reaches itself.) You can reuse `DFSOrder` and `slices.Contains`, or write a tiny helper that returns the visited slice."
+  ]
+}

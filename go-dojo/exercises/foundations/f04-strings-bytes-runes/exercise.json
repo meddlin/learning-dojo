@@ -1,0 +1,17 @@
+{
+  "title": "Strings, bytes and runes",
+  "summary": "UTF-8 under the hood: why len is not the number of characters, and how to process text safely.",
+  "concepts": [
+    "string = immutable bytes",
+    "rune",
+    "range decodes UTF-8",
+    "[]rune and []byte",
+    "unicode package"
+  ],
+  "minutes": 30,
+  "hints": [
+    "`RuneCount`: `for range s { n++ }` already counts runes, because `range` over a string steps one *code point* at a time (and yields `utf8.RuneError` for invalid bytes). `ReverseString`: convert with `r := []rune(s)`, swap from both ends, and convert back with `string(r)`.",
+    "`IsPalindrome`: build a `[]rune` holding only the letters and digits (`unicode.IsLetter`, `unicode.IsDigit`), lower-cased with `unicode.ToLower`, then compare it with its reverse by walking two indices inward. `TruncateRunes`: loop `for i := range s` (i is the *byte* offset of each rune) counting runes, and when you have seen `n` of them return `s[:i]`; if the loop ends first, return `s`.",
+    "`CaesarShift`: work rune by rune. For `'a' <= r && r <= 'z'` compute `'a' + (r-'a'+shift)%26` where `shift` is `((k % 26) + 26) % 26` so negative `k` works; same for upper case; anything else (spaces, punctuation, accented letters) is copied unchanged. Collect into a `strings.Builder` or a `[]rune`."
+  ]
+}

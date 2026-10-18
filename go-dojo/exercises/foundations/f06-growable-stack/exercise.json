@@ -1,0 +1,17 @@
+{
+  "title": "A growable generic stack",
+  "summary": "Build a stack that owns its backing array, grows geometrically, and plays nicely with the garbage collector.",
+  "concepts": [
+    "generic types",
+    "make and copy",
+    "amortised O(1) growth",
+    "useful zero value",
+    "clearing popped slots"
+  ],
+  "minutes": 40,
+  "hints": [
+    "Keep `data []T` as the whole backing buffer (its *length* is the capacity) and `size int` as the number of items in use. `Push`: if `s.size == len(s.data)`, grow: allocate `bigger := make([]T, newCap)` where `newCap` doubles the old length (but is at least 2, which also covers the zero-value stack whose `data` is nil), `copy(bigger, s.data)`, then `s.data = bigger`. Then store `s.data[s.size] = v` and increment `size`.",
+    "`Pop`: if `s.size == 0` return the zero value and `ErrEmpty` (`var zero T` gives you a zero value of any type). Otherwise decrement `size`, save `v := s.data[s.size]`, and **clear the slot** with `var zero T; s.data[s.size] = zero` before returning `v`. If `T` is a pointer, a stale element would keep its target alive for the garbage collector.",
+    "`Peek` is `Pop` without changing anything. `NewStack` just returns `&Stack[T]{data: make([]T, 2)}`. Because `Push` also copes with a nil `data`, a plain `var s Stack[int]` works too: that is \"making the zero value useful\"."
+  ]
+}

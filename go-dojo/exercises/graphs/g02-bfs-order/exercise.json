@@ -1,0 +1,16 @@
+{
+  "title": "Breadth-first search",
+  "summary": "Visit a graph level by level with a queue and a visited set.",
+  "concepts": [
+    "BFS",
+    "queue as a slice",
+    "visited slice",
+    "mark on enqueue"
+  ],
+  "minutes": 25,
+  "hints": [
+    "You need three things: `visited := make([]bool, len(g))`, a queue (`queue := []int{start}` is enough), and a result slice. Start by marking `start` visited, then loop `for len(queue) > 0`.",
+    "Each iteration: take `u := queue[0]` and shrink the queue with `queue = queue[1:]`, append `u` to the result, then for each neighbour `v` in `g[u]` that is not visited yet, mark it visited **and append it to the queue right away**.",
+    "Mark vertices visited when you *enqueue* them, not when you dequeue them. If you wait until you dequeue, the same vertex can be queued several times through different parents, and you will emit duplicates or do extra work."
+  ]
+}

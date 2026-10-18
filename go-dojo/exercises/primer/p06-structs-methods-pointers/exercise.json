@@ -1,0 +1,18 @@
+{
+  "title": "Structs, methods and pointers",
+  "summary": "Group data in structs, attach methods, and know when a method needs a pointer receiver.",
+  "concepts": [
+    "struct",
+    "methods",
+    "value vs pointer receiver",
+    "& and *",
+    "nil pointers",
+    "struct literals"
+  ],
+  "minutes": 25,
+  "hints": [
+    "`Area` and `Perimeter` only read the rectangle, so they use a value receiver: `func (r Rect) Area() float64 { return r.W * r.H }`. `Scale` must *change* the rectangle, so it needs a pointer receiver: `func (r *Rect) Scale(f float64) { r.W *= f; r.H *= f }`. Go lets you write `r.W` through the pointer without a `*`.",
+    "`Scaled` returns a new `Rect` and leaves the original alone: a value receiver gets its own copy, so `r.Scale`-style mutation on that copy is invisible to the caller; just build and return `Rect{r.W * f, r.H * f}`. `Swap(a, b *int)` is `*a, *b = *b, *a`.",
+    "`Account` keeps `balance int`. `Deposit` and `Withdraw` change it, so they take `*Account`. `Withdraw` returns `ErrInsufficient` (and changes nothing) when `n > a.balance`. Callers can still write `var acct Account; acct.Deposit(5)` because Go takes `&acct` for you when the variable is addressable."
+  ]
+}

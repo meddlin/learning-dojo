@@ -1,0 +1,17 @@
+{
+  "title": "Union-Find (disjoint sets)",
+  "summary": "Build a type that merges groups in near-constant time, then use it for Kruskal's MST.",
+  "concepts": [
+    "disjoint set union",
+    "path compression",
+    "union by size",
+    "Kruskal",
+    "slices.SortFunc"
+  ],
+  "minutes": 45,
+  "hints": [
+    "Store two slices: `parent` (initially `parent[i] = i`, meaning every element is its own root) and `size` (initially all 1), plus a `comps` counter starting at `n`. `NewDSU` builds them with `make` and one loop, and returns a `*DSU`.",
+    "`Find(x)`: follow `parent` until `parent[x] == x`. Add path compression by pointing nodes straight at the root on the way back: `d.parent[x] = d.Find(d.parent[x])`. `Unite(a, b)`: find both roots; if equal return false; otherwise attach the smaller tree under the larger, add the sizes, decrement `comps`, return true.",
+    "Kruskal: sort the edges by weight (`slices.SortFunc(edges, func(a, b WeightedEdge) int { return cmp.Compare(a.W, b.W) })`, importing `\"cmp\"` and `\"slices\"`), then go through them in order and keep an edge only when `Unite(u, v)` returns true (it joined two different groups). Sum those weights. If you kept fewer than `n - 1` edges the graph is disconnected: return -1. Careful: sorting `edges` reorders the caller's slice, because slices share their backing array. Sort a `slices.Clone` if you want to be polite."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "title": "Interfaces and type switches",
+  "summary": "Implicit interfaces, the Stringer interface, iota constants and switching on dynamic types.",
+  "concepts": [
+    "interface",
+    "implicit satisfaction",
+    "fmt.Stringer",
+    "iota",
+    "type switch",
+    "any"
+  ],
+  "minutes": 25,
+  "hints": [
+    "A type satisfies `Shape` just by having the methods, with no `implements` keyword. For `Circle` use `math.Pi * c.R * c.R` and `2 * math.Pi * c.R`; for `Square`, `s.Side * s.Side` and `4 * s.Side`. `TotalArea` loops over `[]Shape` and calls `s.Area()` on each, whatever its concrete type.",
+    "`Describe(v any)` is a type switch: `switch x := v.(type) { case int: ...; case string: ...; case []int: ...; case nil: ...; default: ... }`. Inside each case `x` has that concrete type, so `len(x)` works in the `[]int` case. Format with `fmt.Sprintf`, e.g. `fmt.Sprintf(\"int %d\", x)` and `fmt.Sprintf(\"string %q\", x)`.",
+    "`Weekday.String()` can index a package-level array or slice of names: `return dayNames[d]`, guarding against out-of-range values by returning something like `fmt.Sprintf(\"Weekday(%d)\", int(d))`. Careful: inside `String`, never format `d` itself with `%v` or `%d` through a path that calls `String` again, or you recurse forever; convert to `int(d)` first."
+  ]
+}

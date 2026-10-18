@@ -1,0 +1,17 @@
+{
+  "title": "Structs and value semantics",
+  "summary": "Copies, pointers into slices, maps of structs, and embedding (which is not inheritance).",
+  "concepts": [
+    "struct copies",
+    "range copies values",
+    "map elements are not addressable",
+    "embedding and promotion",
+    "no virtual dispatch"
+  ],
+  "minutes": 35,
+  "hints": [
+    "`Translate`: `for _, p := range pts { p.X += dx }` changes a *copy* and does nothing. Loop with the index and write `pts[i].X += dx`. `Biggest` has the same trap: return `&rects[i]`, never `&r` from a `for _, r := range` loop (that is the address of the loop's copy).",
+    "`Restock`: `inv[name].Qty += n` does not compile, because a map element is not addressable (the map may move its entries around). Read the whole struct out, change the copy, write it back: `it := inv[name]; it.Name = name; it.Qty += n; inv[name] = it`. A missing key reads as the zero `Item`, which is exactly the starting point you want.",
+    "With embedding, `Dog` gets `Animal`'s fields and methods promoted: `d.Name` and `d.Introduce()` just work. But `Animal.Introduce` calls `Animal.Speak`, always: Go has no virtual dispatch through embedding. To make `d.Introduce()` say `\"Rex says Woof\"` you must define `Introduce` on `Dog` as well, calling `d.Speak()`. `NewDog` builds `Dog{Animal: Animal{Name: name}, Breed: breed}`."
+  ]
+}

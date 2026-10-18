@@ -1,0 +1,17 @@
+{
+  "title": "Topological sort",
+  "summary": "Order tasks so every dependency comes first, using in-degrees (Kahn's algorithm).",
+  "concepts": [
+    "DAG",
+    "in-degree",
+    "Kahn's algorithm",
+    "dependency ordering",
+    "cycle detection by counting"
+  ],
+  "minutes": 35,
+  "hints": [
+    "First compute `indeg[v]`: loop over every `u` and every `v` in `g[u]` and do `indeg[v]++`. The vertices with `indeg == 0` have no unmet dependencies; put all of them into a queue slice.",
+    "Repeatedly take `u` from the front of the queue, append it to `order`, and for each neighbour `v` decrement `indeg[v]`. When it reaches 0, `v` is ready: append it to the queue.",
+    "If the graph has a cycle, the vertices on it never reach in-degree 0, so `len(order) < len(g)` when the queue runs dry. Return nil in that case. `CanFinish` is then a short wrapper on the same idea - build a graph from the pairs (edge `b -> a` for each `{a, b}`) and check whether a full order exists."
+  ]
+}

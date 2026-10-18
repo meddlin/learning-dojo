@@ -1,0 +1,17 @@
+{
+  "title": "A Matrix type with flat storage",
+  "summary": "Store a matrix in one contiguous slice using row-major indexing, behind a clean method set.",
+  "concepts": [
+    "row-major layout",
+    "index = r * cols + c",
+    "methods and pointer receivers",
+    "struct values are copied",
+    "constructors"
+  ],
+  "minutes": 40,
+  "hints": [
+    "Keep three fields: `rows`, `cols int` and `data []float64` of length `rows * cols`. The constructor builds it: `return &Matrix{rows: rows, cols: cols, data: make([]float64, rows*cols)}` and then fills with `fill` in a loop.",
+    "Row-major means row 0 is stored first, then row 1, and so on, so cell `(r, c)` lives at index `r*m.cols + c`. `At` reads that index and `Set` writes it. Both take a pointer receiver here (`func (m *Matrix) ...`): it is the usual choice when a type has any method that modifies it, so the whole method set stays consistent.",
+    "`Transposed()` builds a new `NewMatrix(m.cols, m.rows, 0)` and copies `t.Set(c, r, m.At(r, c))`. `Identity(n)` is an ordinary function, not a method: create `NewMatrix(n, n, 0)` and set the diagonal to 1. `Equal` compares `rows`, `cols` and every element (`slices.Equal(m.data, o.data)` does the elements). `Clone` must copy the data: `slices.Clone`."
+  ]
+}

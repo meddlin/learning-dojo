@@ -1,5 +1,7 @@
 # C++ Dojo
 
+> Looking for Go? The same dojo for Go (with a syntax primer) lives in [`go-dojo/`](go-dojo/README.md).
+
 A local learning environment for **C/C++**, **graph traversal** and **matrix transforms**. You solve exercises by writing code yourself; the app compiles it, runs real tests, and has a tutor you can ask, but the tutor is told not to hand you the answer.
 
 ```

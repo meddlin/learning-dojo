@@ -1,0 +1,18 @@
+{
+  "title": "Cleanup with defer",
+  "summary": "Go's answer to RAII: release resources on every path, even errors and panics.",
+  "concepts": [
+    "defer",
+    "io.EOF",
+    "named results",
+    "recover and re-panic",
+    "sync.Locker",
+    "errors.Join"
+  ],
+  "minutes": 40,
+  "hints": [
+    "`Copy`: register the closes with `defer` *before* the loop, so every return path (read error, write error, EOF) runs them. Use a deferred closure that can set the named result: `defer func() { if cerr := dst.Close(); cerr != nil && err == nil { err = cerr } }()`. Defers run last-in first-out, so register the one for `src` first if you want `dst` closed first. The loop returns `nil` when `Read` gives `io.EOF`, any other read error as it is, and a write error as it is.",
+    "`Locked`: `mu.Lock()` then immediately `defer mu.Unlock()`, then `f()`. Because the unlock is deferred it also runs when `f` panics, and the panic keeps travelling up to the caller. Writing `mu.Unlock()` after `f()` would leave the mutex locked forever on a panic.",
+    "`RunInTx`: first `defer` a function that calls `recover()`; if it got a panic value it rolls back and then **re-panics** with `panic(p)` so the failure is not swallowed. Then call `work()`: on an error roll back (and if the rollback fails too, combine both with `errors.Join(err, rerr)`); on success return `tx.Commit()`."
+  ]
+}

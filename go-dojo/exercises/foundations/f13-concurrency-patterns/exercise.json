@@ -1,0 +1,19 @@
+{
+  "title": "Concurrency patterns",
+  "summary": "A mutex-protected counter, a bounded worker pool, pipelines, fan-in and cancellation with context.",
+  "concepts": [
+    "sync.Mutex",
+    "data races",
+    "worker pool",
+    "pipeline stages",
+    "fan-in",
+    "context cancellation",
+    "who closes a channel"
+  ],
+  "minutes": 50,
+  "hints": [
+    "`SafeCounter`: guard the map with the mutex in **both** methods: `c.mu.Lock(); defer c.mu.Unlock()`. Reads need the lock too. If you skip it, Go either reports `fatal error: concurrent map writes` or the race detector (when this dojo has it) fails the test with a `DATA RACE` report.",
+    "`MapParallel`: allocate `out := make([]R, len(in))`. Start `min(workers, len(in))` goroutines (treat `workers <= 0` as 1) that all `range` over a shared `jobs` channel of *indexes*, each writing `out[i] = f(in[i])`: separate indexes mean no two goroutines touch the same element, so no lock is needed. Send every index, `close(jobs)`, then `wg.Wait()`. Results land in order because each goes to its own slot.",
+    "Pipeline stages (`Square`, `Evens`) each create their own output channel, start a goroutine that `range`s over the input, and `defer close(out)`: the stage that sends is the stage that closes. `Count(ctx)`: `select { case out <- i: case <-ctx.Done(): return }` in a loop, with `defer close(out)`; a bare `out <- i` would block forever once the consumer walks away (a goroutine leak). `FanIn`: one goroutine per input forwarding into `out`, a `WaitGroup` counting them, and a final goroutine that waits and *then* closes `out` (closing earlier would panic a sender)."
+  ]
+}

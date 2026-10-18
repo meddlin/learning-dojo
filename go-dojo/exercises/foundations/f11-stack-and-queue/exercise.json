@@ -1,0 +1,18 @@
+{
+  "title": "Stacks and queues",
+  "summary": "LIFO versus FIFO with plain slices: the data structures behind DFS and BFS.",
+  "concepts": [
+    "slice as a stack",
+    "slice as a queue",
+    "matching brackets",
+    "RPN",
+    "Josephus",
+    "auxiliary stack"
+  ],
+  "minutes": 40,
+  "hints": [
+    "`BalancedBrackets`: keep a `stack []rune`. For an opening bracket push the *expected closer* (`'('` pushes `')'`, and so on); for a closing bracket, pop and check it equals what you expected, failing if the stack is empty or the character differs. Anything else is ignored. At the end the stack must be empty. A `map[rune]rune` from opener to closer keeps it tidy.",
+    "`EvalRPN`: scan the tokens; try the four operators first (`switch tok { case \"+\", \"-\", \"*\", \"/\": ... }`), otherwise `strconv.Atoi(tok)` and push the number (`Atoi` accepts negatives like `\"-11\"`). An operator pops `b` then `a` (b is on top), computes `a op b` and pushes the result. Report `ErrMalformed` for a bad token, for too few operands, or if the final stack does not hold exactly one number; and `ErrDivByZero` for `/ 0`. Go's `/` truncates toward zero, the behaviour the tests expect.",
+    "`LastSurvivor`: a queue of people `1..n` (a slice). Repeat while more than one remains: move the first `k-1` people from the front to the back (`queue = append(queue[1:], queue[0])`), then drop the next one (`queue = queue[1:]`). `MinStack` keeps a second slice of running minimums: on `Push`, append `min(v, current min)` to `mins`; on `Pop`, drop the last element of both; `Min` reads the last element of `mins`."
+  ]
+}

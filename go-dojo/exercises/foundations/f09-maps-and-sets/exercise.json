@@ -1,0 +1,17 @@
+{
+  "title": "Maps and sets",
+  "summary": "Hash maps as the tool behind most O(n) solutions: counting, deduplicating, grouping, and a generic Set.",
+  "concepts": [
+    "map[K]V",
+    "comma-ok",
+    "Set via map[T]struct{}",
+    "generics with comparable",
+    "struct keys"
+  ],
+  "minutes": 40,
+  "hints": [
+    "A set is a map whose values carry no information: `map[T]struct{}` (the empty struct takes zero bytes). `Add` is `s[v] = struct{}{}`, `Has` is `_, ok := s[v]; return ok`, `Remove` is `delete(s, v)`, `Len` is `len(s)`. `NewSet` must allocate with `make(Set[T])` and add the items, because writing to a nil map panics.",
+    "`FirstDuplicate` and `TwoSum` are single passes with a map: for the first, keep a `seen` set and return the first value already in it; for `TwoSum` map each *value* to its *index*, and for each `x` at index `j` check whether `target-x` is already there (`i, ok := seen[target-x]`) before storing `x`. Return `i, j, true` with `i < j`.",
+    "`GroupAnagrams`: the group key is the word's letters sorted (`r := []rune(w); slices.Sort(r); key := string(r)`). Keep `groups map[string]int` from key to the index in the result, so groups come out in order of first appearance and words keep their input order (do not range over the map to build the result: its order is random). `CountPoints` is `counts[p]++` over a `map[Point]int`, since a struct of ints is a valid map key."
+  ]
+}

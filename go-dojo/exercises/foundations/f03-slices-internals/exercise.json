@@ -1,0 +1,18 @@
+{
+  "title": "Inside a slice: length, capacity, aliasing",
+  "summary": "In-place algorithms, full slice expressions and how append really grows.",
+  "concepts": [
+    "slice header",
+    "len vs cap",
+    "aliasing",
+    "in-place filtering",
+    "full slice expression",
+    "amortised growth"
+  ],
+  "minutes": 40,
+  "hints": [
+    "`ReverseInPlace` and `PartitionEvens` both use two indices walking toward each other: `i, j := 0, len(xs)-1; for i < j { ... }`. In `PartitionEvens`, advance `i` past evens, retreat `j` past odds, and swap when both are stuck. Return `i` (the index of the first odd, or `len(xs)` if there are none).",
+    "`FilterInPlace` reuses the input's memory: `out := xs[:0]`, then `for _, x := range xs { if keep(x) { out = append(out, x) } }`. `append` writes into the space you are reading from, always *behind* the read position, so it is safe. `Clip(xs, n)` is the three-index slice `xs[:n:n]`: the last `n` caps the capacity, so a later `append` has to copy instead of overwriting `xs[n]`.",
+    "`GrowthCaps(n)`: start with `var s []int` and `last := cap(s)`; append `n` times, and each time `cap(s) != last`, record the new capacity and update `last`. You are watching `append` reallocate. The exact growth numbers belong to the Go runtime; the *shape* (few reallocations, roughly doubling) is the point."
+  ]
+}
