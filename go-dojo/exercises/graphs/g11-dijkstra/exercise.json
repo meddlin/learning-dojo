@@ -1,0 +1,17 @@
+{
+  "title": "Dijkstra's shortest paths",
+  "summary": "Shortest paths with weighted edges using a priority queue.",
+  "concepts": [
+    "weighted graphs",
+    "container/heap",
+    "relaxation",
+    "stale entries",
+    "INF sentinel"
+  ],
+  "minutes": 45,
+  "hints": [
+    "Keep `dist := make([]int64, n)` filled with `INF` except `dist[start] = 0`, and a min-heap of `(distance, vertex)` items. Go's heap is `container/heap`: define a small type such as `type pq []item` with `Len`, `Less`, `Swap`, `Push` and `Pop`, then use `heap.Push(&h, ...)` and `heap.Pop(&h)`. You practised this in the heaps exercise; `Less` should compare distances so the *smallest* comes out first.",
+    "Loop while the heap is not empty: pop `(d, u)`. If `d > dist[u]` this entry is stale (a better route was found after it was pushed): `continue`. Otherwise relax each edge `(v, w)` of `u`: if `dist[u] + w < dist[v]`, set `dist[v]` and push `(dist[v], v)`.",
+    "Never add to `INF` itself (that can overflow). It is safe here because you only expand vertices you popped, whose `dist` is finite. For `DijkstraPath`, also keep `parent[v] = u` whenever you improve `dist[v]`, then walk back from the target and reverse with `slices.Reverse`, exactly like in the unweighted exercise."
+  ]
+}

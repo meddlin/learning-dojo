@@ -1,0 +1,17 @@
+{
+  "title": "Linked lists",
+  "summary": "Nodes linked by pointers: building, reversing, filtering, merging and detecting cycles.",
+  "concepts": [
+    "*Node",
+    "rewiring pointers",
+    "dummy head",
+    "slow/fast pointers",
+    "nil dereference"
+  ],
+  "minutes": 45,
+  "hints": [
+    "`PushFront` is one line: `return &Node{Val: v, Next: head}`. `Reverse` walks the list once keeping `prev`: at each node save `next := cur.Next`, point `cur.Next = prev`, then step both forward (`prev, cur = cur, next`). When `cur` is nil, `prev` is the new head. No allocation: you only rewire.",
+    "`RemoveAll` is easiest with a **dummy head**: `dummy := &Node{Next: head}`, then walk with `p := dummy`; while `p.Next != nil`, if `p.Next.Val == target` skip it with `p.Next = p.Next.Next`, otherwise advance `p = p.Next`. Return `dummy.Next`. The dummy removes the special case \"the head itself must go\". `MergeSorted` uses the same dummy-and-tail trick: append whichever of the two heads is smaller (take `a` on ties so the merge is stable), then attach whatever remains.",
+    "`Middle` and `HasCycle` both use two pointers: `slow` moves one step, `fast` two. For `Middle`, loop `for fast != nil && fast.Next != nil` and return `slow` (for an even length, the second of the two middle nodes). For `HasCycle`, a cycle means `fast` never reaches nil and eventually *catches* `slow`: return true when `slow == fast`. Always check `fast != nil && fast.Next != nil` before `fast.Next.Next`, or you will dereference nil."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Grids as slices of slices",
+  "summary": "Build, transpose and summarise a 2D grid; get the row/column indexing habits right.",
+  "concepts": [
+    "[][]int",
+    "rows vs columns",
+    "transpose",
+    "nested loops",
+    "empty-matrix edge cases"
+  ],
+  "minutes": 25,
+  "hints": [
+    "A matrix `m` has `len(m)` rows and `len(m[0])` columns (only if there is at least one row!). Guard against the empty matrix first: `if len(m) == 0 { return nil }`. Access is `m[row][col]`, row first.",
+    "Transpose swaps the roles: the result has `cols` rows and `rows` columns, and `t[c][r] = m[r][c]`. Allocate it first with `t := MakeMatrix(cols, rows, 0)` (or a loop of `make([]int, rows)`), then fill it with two nested loops.",
+    "`RowSums` has one entry per row, `ColSums` one per column (`sums := make([]int, cols)`, then `sums[c] += m[r][c]`). A matrix is symmetric when it is square and `m[r][c] == m[c][r]` for every pair; you only need to compare cells above the diagonal. For `MakeMatrix`, remember each row needs its own `make`, or all rows will share one array."
+  ]
+}

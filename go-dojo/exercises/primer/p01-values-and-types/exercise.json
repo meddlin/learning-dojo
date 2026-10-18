@@ -1,0 +1,17 @@
+{
+  "title": "Values, types and fmt",
+  "summary": "Declare variables, convert between numeric types explicitly, and format output with fmt.",
+  "concepts": [
+    "package main",
+    "var and :=",
+    "zero values",
+    "explicit conversion",
+    "fmt verbs"
+  ],
+  "minutes": 15,
+  "hints": [
+    "`Greeting`: an `if name == \"\" { name = \"world\" }` followed by `\"Hello, \" + name + \"!\"` (or `fmt.Sprintf(\"Hello, %s!\", name)`) is all it takes. Strings compare with `==` in Go.",
+    "`Average`: Go never converts numbers implicitly, so `(a + b) / 2` is *integer* division. Convert first: `float64(a+b) / 2`. Then `7` and `8` give `7.5`, not `7`.",
+    "`Describe` is a single `fmt.Sprintf(\"%d = 0x%x = 0b%b\", n, n, n)`: `%d` decimal, `%x` hex, `%b` binary. For `ZeroValues`, declare with no initialiser (`var i int`, `var s string`, `var b bool`, `var sl []int`, `var m map[string]int`, `var p *int`) and format them with `\"%v %q %v %v %v %v\"`."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "title": "Functions, errors and defer",
+  "summary": "Multiple return values, variadic functions, errors as values, wrapping, defer and recover.",
+  "concepts": [
+    "multiple returns",
+    "variadic",
+    "error values",
+    "errors.Is / errors.As",
+    "%w wrapping",
+    "defer / recover"
+  ],
+  "minutes": 25,
+  "hints": [
+    "`Divide` returns `(0, ErrDivideByZero)` when `b == 0`, otherwise `(a / b, nil)`. Returning a package-level sentinel error (not a fresh `errors.New` each time) is what lets callers test for it with `errors.Is`.",
+    "`MinMax(xs ...int)`: inside, `xs` is a plain `[]int`. Return `ErrEmpty` when `len(xs) == 0`; otherwise start with `lo, hi := xs[0], xs[0]` and loop. Callers pass a slice with `MinMax(nums...)`.",
+    "`ParsePositive`: call `strconv.Atoi(s)`; if it fails, `return 0, fmt.Errorf(\"parse %q: %w\", s, err)`, where `%w` wraps the original error so `errors.As` can still find the `*strconv.NumError`. For `n <= 0` wrap the sentinel: `fmt.Errorf(\"parse %q: %w\", s, ErrNotPositive)`. For `Try`, `defer` a function that calls `recover()` and assigns to the *named* result `err`. For `DeferOrder`, deferred calls run last-in first-out after the function body, and they can modify named results."
+  ]
+}

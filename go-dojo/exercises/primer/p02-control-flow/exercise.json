@@ -1,0 +1,17 @@
+{
+  "title": "Control flow: for, if, switch",
+  "summary": "Go has one loop keyword and a switch that does not fall through.",
+  "concepts": [
+    "for (three forms)",
+    "range",
+    "if with init",
+    "switch",
+    "labeled continue"
+  ],
+  "minutes": 15,
+  "hints": [
+    "`FizzBuzz`: loop `for i := 1; i <= n; i++`, and decide with a `switch` with no tag: `case i%15 == 0:` first, then `i%3`, then `i%5`, and `default:` for the number (`strconv.Itoa(i)` or `fmt.Sprint(i)`). Append each result to a slice.",
+    "`CollatzSteps` is a while loop, which Go spells `for n != 1 { ... }`. Inside, `if n%2 == 0 { n /= 2 } else { n = 3*n + 1 }`, and count the iterations.",
+    "`SumUntilNegative`: `for _, x := range xs { if x < 0 { break }; sum += x }`. For `PrimesUpTo`, label the outer loop (`outer:`), and from the inner loop write `continue outer` as soon as you find a divisor, so the candidate is skipped without being appended."
+  ]
+}

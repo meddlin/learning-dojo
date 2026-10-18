@@ -1,0 +1,18 @@
+{
+  "title": "Heaps and container/heap",
+  "summary": "Priority queues with the standard library's heap interface, plus custom sort orders.",
+  "concepts": [
+    "container/heap",
+    "heap.Interface",
+    "min-heap vs max-heap",
+    "k-way merge",
+    "two heaps",
+    "comparators"
+  ],
+  "minutes": 50,
+  "hints": [
+    "Go's `container/heap` is an interface you implement on your own slice type: `Len`, `Less`, `Swap`, plus `Push(x any)` and `Pop() any` (which add/remove at the **end** of the slice). Then `heap.Init`, `heap.Push(&h, x)` and `heap.Pop(&h)` keep the heap property. `Less(i, j)` decides what comes out first: `h[i] < h[j]` gives a min-heap, `h[i] > h[j]` a max-heap.",
+    "`KSmallest`: keep a **max**-heap of at most `k` values. For each `x`: push it; if the heap now has more than `k` elements, pop the largest. At the end the heap holds the k smallest; pop them all and reverse (or fill the result from the back). `MergeSortedLists`: a min-heap of `(value, list index, position)` items, seeded with the first element of every non-empty list; pop the smallest, append it, and push the next element of the same list.",
+    "`SortByDistance`: clone then `slices.SortFunc` with `cmp.Or(cmp.Compare(da, db), cmp.Compare(a.X, b.X), cmp.Compare(a.Y, b.Y))`, where `da = a.X*a.X + a.Y*a.Y` (compare *squared* distances: no square root needed). `MedianTracker` uses two heaps: a max-heap `low` for the smaller half and a min-heap `high` for the larger half, kept within one element of each other in size. `Add` pushes to `low`, moves `low`'s top to `high`, and moves one back if `high` got bigger. The median is `low`'s top (odd count) or the mean of both tops."
+  ]
+}

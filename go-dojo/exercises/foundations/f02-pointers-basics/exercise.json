@@ -1,0 +1,17 @@
+{
+  "title": "Pointers and addresses",
+  "summary": "Taking addresses, dereferencing, nil checks, and returning pointers into slices.",
+  "concepts": [
+    "&x and *p",
+    "nil pointers",
+    "pointer into a slice element",
+    "pointer to pointer",
+    "escape analysis"
+  ],
+  "minutes": 25,
+  "hints": [
+    "`MinMaxInto` writes through its out-parameters: `*lo = ...` and `*hi = ...`. Start from `values[0]`, loop over the rest, and assign at the end (or as you go). `BumpIfPositive` is `if p != nil && *p > 0 { *p++; return true }`: the `&&` stops before the dereference, so a nil pointer is never touched.",
+    "`FindFirst` must return the address of the element *in the slice*, `&values[i]`, not the address of the loop variable (`for _, v := range` gives you a copy, so `&v` points at the copy and writing through it changes nothing). Loop with the index instead.",
+    "`NewCounter` is just `n := start; return &n`. That is perfectly safe in Go: the compiler notices the variable outlives the function and puts it on the heap (escape analysis); there are no dangling stack pointers. `SwapPointers(a, b **int)` is `*a, *b = *b, *a`: it swaps which ints the two pointers *point at*, and the ints themselves do not change."
+  ]
+}

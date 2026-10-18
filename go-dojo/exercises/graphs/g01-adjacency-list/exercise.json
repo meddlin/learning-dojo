@@ -1,0 +1,17 @@
+{
+  "title": "Representing a graph",
+  "summary": "Adjacency lists, directed vs undirected edges, degrees.",
+  "concepts": [
+    "adjacency list",
+    "directed / undirected",
+    "degree",
+    "[][]int",
+    "nil slices"
+  ],
+  "minutes": 20,
+  "hints": [
+    "Start with `g := make(Graph, n)`: that gives you `n` neighbour lists, one per vertex, each of them a nil slice. A nil slice is a perfectly good empty list, so `g[u] = append(g[u], v)` works straight away. An undirected edge also needs `g[v] = append(g[v], u)`.",
+    "`OutDegree` is just the length of one list: `len(g[u])`. `HasEdge` can loop over `g[u]` looking for `v`, or call `slices.Contains(g[u], v)` (import `\"slices\"`).",
+    "`InDegrees`: make a result `make([]int, len(g))` (all zeros), then walk every list of every vertex with `for _, neighbours := range g { for _, v := range neighbours { ... } }` and do `deg[v]++` for each neighbour found."
+  ]
+}

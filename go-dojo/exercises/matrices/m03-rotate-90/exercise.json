@@ -1,0 +1,17 @@
+{
+  "title": "Rotating a matrix 90 degrees",
+  "summary": "Rotate with an index formula, then in place using transpose + reverse.",
+  "concepts": [
+    "index mapping",
+    "rotation as transpose + flip",
+    "in-place algorithms",
+    "slices.Reverse",
+    "swapping with tuple assignment"
+  ],
+  "minutes": 35,
+  "hints": [
+    "Work out where one cell goes. Rotating clockwise, the first row becomes the last column: the element at `(r, c)` of an `R x C` matrix ends up at `(c, R-1-r)` of the `C x R` result. Allocate the result (`out` with `C` rows of `R` cells) and assign `out[c][R-1-r] = m[r][c]`.",
+    "Counter-clockwise is the mirror image: `(r, c)` goes to `(C-1-c, r)`. Rotating 180 degrees maps `(r, c)` to `(R-1-r, C-1-c)`; you can also just rotate clockwise twice.",
+    "In place for a square matrix: rotate clockwise = **transpose, then reverse every row**. Transpose by swapping `m[r][c], m[c][r] = m[c][r], m[r][c]` for `c > r` only (otherwise you swap everything twice and undo it). Then `slices.Reverse(row)` on each row. Go's tuple assignment makes the swap a one-liner."
+  ]
+}

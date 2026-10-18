@@ -1,0 +1,17 @@
+{
+  "title": "Maps and strings",
+  "summary": "Key/value maps, the comma-ok idiom, and strings as UTF-8 bytes and runes.",
+  "concepts": [
+    "map",
+    "comma-ok",
+    "random iteration order",
+    "strings package",
+    "bytes vs runes"
+  ],
+  "minutes": 20,
+  "hints": [
+    "`WordCount`: `counts := make(map[string]int)` and then `counts[word]++`. A missing key reads as the zero value, so you do not need to check first. `strings.Fields(strings.ToLower(text))` splits on any whitespace.",
+    "`SortedKeys`: collect the keys with `for k := range m { keys = append(keys, k) }`, then `slices.Sort(keys)` (or `sort.Strings`). Map iteration order is deliberately randomised, so sorting is the only way to get a stable order. `Lookup` needs the comma-ok form: `n, ok := m[key]`, because `0` could be a real stored value.",
+    "`Initials`: a string indexes into *bytes*, and `word[:1]` would cut a multi-byte letter like `é` in half. Convert the word to `[]rune` and take `r[0]`, then upper-case it with `unicode.ToUpper` or `strings.ToUpper(string(r))`. Collect the results in a `strings.Builder` (`sb.WriteRune(...)`, `sb.String()`)."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Goroutines, channels and select",
+  "summary": "Start concurrent work, communicate with channels, wait with WaitGroup and time out with select.",
+  "concepts": [
+    "go statement",
+    "channels",
+    "close and range",
+    "sync.WaitGroup",
+    "select with time.After"
+  ],
+  "minutes": 30,
+  "hints": [
+    "`Generate`: make an unbuffered channel `ch := make(chan int)`, start `go func() { defer close(ch); for _, n := range nums { ch <- n } }()`, and return `ch` straight away. The goroutine does the sending while the caller receives. Closing is what lets the receiver's `range` loop end.",
+    "`Collect`: `for v := range ch { out = append(out, v) }`. `ParallelSum`: split the work into `parts` chunks, give each goroutine its own slot in a `sums := make([]int, parts)` slice, and wait with a `sync.WaitGroup` (`wg.Add(1)` before `go`, `defer wg.Done()` inside, `wg.Wait()` after). Distinct slots mean no two goroutines write the same memory, so no lock is needed (the race detector would tell you otherwise).",
+    "`FirstOf` uses `select`: `select { case v := <-a: return v, true; case v := <-b: return v, true; case <-time.After(timeout): return \"\", false }`. A `select` waits until one of its cases can proceed and runs that one."
+  ]
+}

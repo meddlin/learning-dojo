@@ -1,0 +1,17 @@
+{
+  "title": "Sorting and searching",
+  "summary": "Stable and multi-key sorts with comparator functions, binary search, and merging sorted data.",
+  "concepts": [
+    "slices.SortFunc",
+    "cmp.Compare",
+    "stability",
+    "binary search invariants",
+    "two-pointer merge"
+  ],
+  "minutes": 40,
+  "hints": [
+    "`SortByLength`: clone the input first (`slices.Clone`) so the caller's slice is untouched, then `slices.SortStableFunc(out, func(a, b string) int { return cmp.Compare(len(a), len(b)) })`. Stable means equal-length words keep their original relative order. A comparator returns negative, zero or positive, like `strcmp`.",
+    "`SortPeople` sorts in place by age *descending*, then name ascending: compare ages with the arguments swapped (`cmp.Compare(b.Age, a.Age)`), and if that is 0 fall back to `cmp.Compare(a.Name, b.Name)`. `cmp.Or(first, second)` returns the first non-zero value, which expresses exactly that.",
+    "Binary search keeps a half-open window `[lo, hi)`: `for lo < hi { mid := lo + (hi-lo)/2; if xs[mid] < target { lo = mid + 1 } else { hi = mid } }` ends with `lo` at the first index whose value is `>= target`. That *is* `LowerBound`. `BinarySearch` is then `i := LowerBound(...)` plus a check `i < len(xs) && xs[i] == target`. `MergeSorted` walks two indices `i`, `j`, always appending the smaller head, then appends whatever remains of either list."
+  ]
+}

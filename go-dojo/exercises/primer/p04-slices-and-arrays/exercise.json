@@ -1,0 +1,18 @@
+{
+  "title": "Arrays, slices and append",
+  "summary": "Fixed-size arrays versus growable slices, and the everyday slice idioms.",
+  "concepts": [
+    "arrays",
+    "slices",
+    "len and cap",
+    "append",
+    "slicing s[i:j]",
+    "copy"
+  ],
+  "minutes": 20,
+  "hints": [
+    "`Evens`: start with `var out []int` (a nil slice is fine) and `out = append(out, x)` for every even `x`. Always assign the result of `append` back.",
+    "`Reversed` must return a **new** slice: `out := make([]int, len(xs))`, then `out[len(xs)-1-i] = x` while ranging over `xs`. `Chunk`: loop `for start := 0; start < len(xs); start += size` and take `xs[start:min(start+size, len(xs))]`.",
+    "`Insert` and `Remove` can be written with `append` and slicing. Remove: `append(xs[:i], xs[i+1:]...)`. Insert: first grow with `xs = append(xs, 0)`, shift the tail right with `copy(xs[i+1:], xs[i:])`, then assign `xs[i] = v`. (The standard library's `slices.Insert`/`slices.Delete` do the same, but write it by hand once.) Return a slice that does not disturb the caller's original: start from `slices.Clone(xs)` or make a copy."
+  ]
+}

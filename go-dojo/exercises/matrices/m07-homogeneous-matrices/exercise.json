@@ -1,0 +1,16 @@
+{
+  "title": "Homogeneous coordinates: one matrix for everything",
+  "summary": "Express translation, scaling and rotation as 3x3 matrices so they can be combined by multiplying.",
+  "concepts": [
+    "homogeneous coordinates",
+    "3x3 transform matrices",
+    "composition order",
+    "arrays are values"
+  ],
+  "minutes": 45,
+  "hints": [
+    "Layout of a 2D transform: `{{a, b, tx}, {c, d, ty}, {0, 0, 1}}`. Translation: `a = d = 1`, `b = c = 0`, and `tx, ty` in the last column. Scaling: `a = sx`, `d = sy`, rest as identity. Rotation by angle `t`: `{{cos t, -sin t, 0}, {sin t, cos t, 0}, {0, 0, 1}}`.",
+    "`Apply(m, p)` multiplies `m` by the column vector `(x, y, 1)`: `x' = m[0][0]*x + m[0][1]*y + m[0][2]` and `y' = m[1][0]*x + m[1][1]*y + m[1][2]`. The bottom row stays `0 0 1`, so you can skip computing the third coordinate.",
+    "`Multiply(a, b)` is the ordinary 3x3 product `result[i][j] = sum over k of a[i][k] * b[k][j]`. Because points are *column* vectors on the right, `Multiply(A, B)` applied to `p` equals `A(B(p))`: the **right-hand** matrix acts first. Your test for this is `Apply(Multiply(T, S), p)` == scale first, then translate. `Mat3` is an array, so `var out Mat3` is already a zeroed 3x3 you can fill and return."
+  ]
+}

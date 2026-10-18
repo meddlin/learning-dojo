@@ -1,0 +1,17 @@
+{
+  "title": "Closures and generics",
+  "summary": "Functions as values that remember their surroundings, and type parameters for reusable code.",
+  "concepts": [
+    "first-class functions",
+    "closures",
+    "loop variable scope",
+    "generics",
+    "type constraints (cmp.Ordered)"
+  ],
+  "minutes": 25,
+  "hints": [
+    "`Counter` returns a closure over a variable declared *outside* the returned function: `n := 0; return func() int { n++; return n }`. Each call to `Counter()` makes a fresh `n`, so two counters never interfere.",
+    "`MakeAdders(n)`: `for i := range n { adders = append(adders, func(x int) int { return x + i }) }`. Since Go 1.22 every iteration gets its *own* `i`, so each closure remembers a different value (in older Go they all shared one and printed the last). The generic helpers are plain loops: `Map` allocates `make([]U, len(xs))` and fills it, `Filter` appends the elements `keep` approves, and `Reduce` folds with `acc = f(acc, x)`.",
+    "`MaxOf[T cmp.Ordered](xs ...T) (T, bool)`: `cmp.Ordered` is the constraint for types that support `<`, so it works for ints, floats and strings alike. Return the zero value and `false` for no arguments (`var zero T; return zero, false`)."
+  ]
+}

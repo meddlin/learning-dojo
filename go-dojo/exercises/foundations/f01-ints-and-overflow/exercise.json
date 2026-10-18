@@ -1,0 +1,17 @@
+{
+  "title": "Integers, overflow and wraparound",
+  "summary": "Fixed-size integers, why wraparound is defined in Go but still dangerous, and safe bit shifting.",
+  "concepts": [
+    "sized integers",
+    "wraparound",
+    "math.MaxInt32",
+    "widening conversions",
+    "shifts"
+  ],
+  "minutes": 20,
+  "hints": [
+    "For `AddOverflows`, convert to a wider type before adding: `s := int64(a) + int64(b)`, then compare `s` with `math.MaxInt32` and `math.MinInt32`. Two `int32` values can never overflow an `int64`.",
+    "For `DigitSum`, remember that `-n` for `math.MinInt32` is `math.MinInt32` again: negating wraps silently. Widen first (`v := int64(n)`), take the absolute value, then peel digits with `% 10` and `/ 10`.",
+    "For `RotateLeft`, reduce the count with `k %= 32` and combine `x<<k | x>>(32-k)`. In Go shifting by the width or more is *defined* and gives 0 (for unsigned values), so even `k == 0` works without a special case. For `SaturatingAddInt8`, add as `int`, then clamp to the range -128..127 before converting back."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "title": "BFS on a grid: solving a maze",
+  "summary": "Treat grid cells as vertices and the four neighbours as edges.",
+  "concepts": [
+    "implicit graphs",
+    "grid neighbours",
+    "bounds checking",
+    "struct as a value",
+    "BFS with distances"
+  ],
+  "minutes": 35,
+  "hints": [
+    "Write `Neighbors` first. Offsets in the required order: up `(-1,0)`, right `(0,+1)`, down `(+1,0)`, left `(0,-1)`. Loop over them, compute `nr := r + dr`, `nc := c + dc`, and keep it only if `0 <= nr && nr < len(grid)`, `0 <= nc && nc < len(grid[nr])` and `grid[nr][nc] != '#'`. (Indexing a string gives a `byte`, and `'#'` is happy to be compared with one.)",
+    "Find `S` and `E` by scanning the grid. Then run BFS exactly like the plain-graph version, but the 'vertex' is a `Cell` (structs can be slice elements and map keys) and the 'adjacency list' is your `Neighbors` function. A `dist` grid, `[][]int` of the same shape filled with `-1`, serves as both distance and visited.",
+    "Return `dist[er][ec]` when you pop or discover `E`; if the queue empties first there is no route, so return `-1`. Edge cases: no `S` or `E` in the grid, and `S` next to `E`."
+  ]
+}

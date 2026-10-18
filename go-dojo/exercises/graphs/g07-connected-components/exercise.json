@@ -1,0 +1,17 @@
+{
+  "title": "Connected components and islands",
+  "summary": "Restart a traversal from every unvisited vertex to count the pieces of a graph.",
+  "concepts": [
+    "outer loop over all vertices",
+    "flood fill",
+    "connected components",
+    "grid traversal",
+    "strings are immutable"
+  ],
+  "minutes": 35,
+  "hints": [
+    "A single BFS/DFS only covers what is reachable from one start. To cover the whole graph, loop `for s := range len(g)` and start a new traversal whenever `s` is not visited yet. Each time you start one, you have found one new component.",
+    "Write a small helper that floods from a vertex/cell and marks everything it reaches. For `CountComponents` it needs to return nothing; for `LargestIsland` have it return how many cells it marked. Use whichever traversal you like, BFS with a queue slice avoids deep recursion.",
+    "For the grid, reuse the direction-table idea from the maze exercise. Keep a `visited` grid of the same shape (`[][]bool`). Do not try to write `'0'` into the grid itself: a string is immutable in Go and the slice you were given belongs to the caller. Only cells equal to `'1'` count as land."
+  ]
+}

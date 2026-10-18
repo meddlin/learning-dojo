@@ -1,0 +1,16 @@
+{
+  "title": "Depth-first search (iterative)",
+  "summary": "Replace recursion with an explicit stack and get exactly the same visiting order.",
+  "concepts": [
+    "explicit stack",
+    "mark on pop",
+    "reverse push order",
+    "stack growth"
+  ],
+  "minutes": 30,
+  "hints": [
+    "The loop mirrors BFS but takes from the *end* of a slice. Push `start`; while the stack is not empty, pop `u` (`u := stack[len(stack)-1]; stack = stack[:len(stack)-1]`); if `u` is already visited, `continue`; otherwise mark it visited, append it to the result, and push its neighbours.",
+    "For the order to match the recursive version, the *first* neighbour in `g[u]` must be popped *first*. A stack hands back the last thing pushed, so push the neighbours in **reverse** order (loop `for i := len(g[u]) - 1; i >= 0; i--`).",
+    "Unlike BFS, mark a vertex visited when you **pop** it, not when you push it. A vertex can legitimately be on the stack several times (reached through different parents); the first time it is popped is the one that counts, and later copies are skipped by the `visited` check."
+  ]
+}

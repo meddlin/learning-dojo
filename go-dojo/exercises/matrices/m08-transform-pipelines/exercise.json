@@ -1,0 +1,17 @@
+{
+  "title": "Transform pipelines",
+  "summary": "Rotate about a pivot, compose a list of transforms, invert a rigid motion and bound the result.",
+  "concepts": [
+    "pivot sandwich T(p) R T(-p)",
+    "composition order",
+    "inverse of rotation + translation",
+    "[]Vec2",
+    "bounding box"
+  ],
+  "minutes": 50,
+  "hints": [
+    "A pivot transform is a sandwich: move the pivot to the origin, do the operation, move back. As a product, written right to left: `Translation(px, py) * Rotation(deg) * Translation(-px, -py)`. Use `Multiply` twice. `ScalingAbout` is the same sandwich with `Scaling` in the middle.",
+    "`Compose([]Mat3{A, B, C})` should apply A first, then B, then C, which is the matrix product `C * B * A`. Start with `result := Identity3()` and for each matrix `M` in list order do `result = Multiply(M, result)`: every new transform goes on the left.",
+    "A rigid motion is `p' = R p + t`. Undo it: `p = R^T (p' - t) = R^T p' + (-R^T t)`. So the inverse matrix has the transposed 2x2 rotation block in the top-left, and translation column `-(R^T t)`. For `BoundingBox`, start from the first point (or from `math.Inf(1)` and `math.Inf(-1)`) and update with the built-in `min` and `max`."
+  ]
+}
