@@ -1,5 +1,7 @@
 node_modules/
-work/
-build/
-progress.json
+dist/
+out/
+*.vsix
 .DS_Store
+.vscode-test/
+.legacy/

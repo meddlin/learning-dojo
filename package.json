@@ -1,19 +1,316 @@
 {
   "name": "learning-dojo",
+  "displayName": "Learning Dojo",
+  "description": "Learn C/C++ and Go, graph traversal and matrix transforms by solving real exercises in VS Code, with tests, spaced review and an optional local AI tutor. Switch between languages with one click.",
   "version": "0.1.0",
+  "publisher": "meddlin",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1f2a44",
+    "theme": "dark"
+  },
+  "homepage": "https://github.com/meddlin/learning-dojo#readme",
+  "bugs": {
+    "url": "https://github.com/meddlin/learning-dojo/issues"
+  },
   "private": true,
-  "description": "A local learning environment for C/C++ and Go: syntax, data structures, graph traversal and matrix transforms.",
-  "scripts": {
-    "start": "node server/index.js",
-    "verify": "node scripts/verify.js"
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meddlin/learning-dojo.git"
   },
   "engines": {
+    "vscode": "^1.85.0",
     "node": ">=18"
   },
-  "dependencies": {
-    "@xterm/addon-fit": "^0.10.0",
-    "@xterm/xterm": "^5.5.0",
-    "monaco-editor": "^0.52.0",
-    "ws": "^8.18.0"
+  "categories": [
+    "Education",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "c++",
+    "cpp",
+    "go",
+    "golang",
+    "learning",
+    "algorithms",
+    "data structures",
+    "graph",
+    "exercises",
+    "ollama"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "workspaceContains:.dojo/progress.json"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "Learning Dojo compiles and runs the code you write, so it only works in a trusted workspace."
+    },
+    "virtualWorkspaces": false
+  },
+  "extensionKind": [
+    "workspace"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "dojo",
+          "title": "Learning Dojo",
+          "icon": "media/dojo.svg"
+        }
+      ]
+    },
+    "views": {
+      "dojo": [
+        {
+          "id": "dojo.path",
+          "name": "Path",
+          "icon": "media/dojo.svg",
+          "contextualTitle": "Learning Dojo"
+        },
+        {
+          "id": "dojo.tutor",
+          "name": "Tutor",
+          "type": "webview",
+          "icon": "media/dojo.svg",
+          "contextualTitle": "Learning Dojo"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "dojo.path",
+        "contents": "Pick a folder where your exercise files and progress will live. C++ and Go exercises each get their own subfolder.\n[Choose dojo folder](command:dojo.chooseFolder)\n[Use the open folder](command:dojo.useOpenFolder)",
+        "when": "!dojo.hasFolder"
+      }
+    ],
+    "commands": [
+      {
+        "command": "dojo.chooseFolder",
+        "title": "Choose Dojo Folder…",
+        "category": "Dojo",
+        "icon": "$(folder-opened)"
+      },
+      {
+        "command": "dojo.useOpenFolder",
+        "title": "Use the Open Folder as Dojo Folder",
+        "category": "Dojo"
+      },
+      {
+        "command": "dojo.switchLanguage",
+        "title": "Switch Language (C++ / Go)…",
+        "category": "Dojo",
+        "icon": "$(symbol-namespace)"
+      },
+      {
+        "command": "dojo.openExercise",
+        "title": "Open Exercise…",
+        "category": "Dojo",
+        "icon": "$(book)"
+      },
+      {
+        "command": "dojo.openNext",
+        "title": "Open Next Exercise",
+        "category": "Dojo",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "command": "dojo.runTests",
+        "title": "Run Exercise Tests",
+        "category": "Dojo",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "dojo.run",
+        "title": "Run My Program in Terminal",
+        "category": "Dojo",
+        "icon": "$(play)"
+      },
+      {
+        "command": "dojo.resetExercise",
+        "title": "Reset Exercise to Starter",
+        "category": "Dojo"
+      },
+      {
+        "command": "dojo.practiceAgain",
+        "title": "Practise Exercise Again",
+        "category": "Dojo"
+      },
+      {
+        "command": "dojo.togglePracticeMode",
+        "title": "Toggle Practice Mode (autocomplete and AI suggestions off)",
+        "category": "Dojo"
+      },
+      {
+        "command": "dojo.selectTutorModel",
+        "title": "Select Tutor Model…",
+        "category": "Dojo"
+      },
+      {
+        "command": "dojo.refresh",
+        "title": "Refresh",
+        "category": "Dojo",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "dojo.switchLanguage",
+          "when": "view == dojo.path",
+          "group": "navigation@1"
+        },
+        {
+          "command": "dojo.chooseFolder",
+          "when": "view == dojo.path",
+          "group": "navigation@2"
+        },
+        {
+          "command": "dojo.refresh",
+          "when": "view == dojo.path",
+          "group": "navigation@3"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "dojo.runTests",
+          "when": "dojo.inExercise",
+          "group": "navigation@1"
+        },
+        {
+          "command": "dojo.run",
+          "when": "dojo.inExercise",
+          "group": "navigation@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "dojo.switchLanguage",
+          "when": "dojo.hasFolder"
+        },
+        {
+          "command": "dojo.runTests",
+          "when": "dojo.hasFolder"
+        },
+        {
+          "command": "dojo.run",
+          "when": "dojo.inExercise"
+        },
+        {
+          "command": "dojo.resetExercise",
+          "when": "dojo.inExercise"
+        },
+        {
+          "command": "dojo.practiceAgain",
+          "when": "dojo.inExercise"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "dojo.resetExercise",
+          "when": "view == dojo.path && viewItem =~ /^exercise/",
+          "group": "1_edit@1"
+        },
+        {
+          "command": "dojo.practiceAgain",
+          "when": "view == dojo.path && viewItem == exercise-solved",
+          "group": "1_edit@2"
+        },
+        {
+          "command": "dojo.runTests",
+          "when": "view == dojo.path && viewItem =~ /^exercise/",
+          "group": "0_run@1"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "dojo.runTests",
+        "key": "ctrl+enter",
+        "mac": "cmd+enter",
+        "when": "dojo.inExercise && editorTextFocus"
+      },
+      {
+        "command": "dojo.run",
+        "key": "ctrl+shift+enter",
+        "mac": "cmd+shift+enter",
+        "when": "dojo.inExercise && editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "Learning Dojo",
+      "properties": {
+        "dojo.compiler": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Path or name of the C++ compiler to use (for example `g++-14` or `/opt/homebrew/bin/clang++`). Leave empty to auto-detect `clang++`, then `g++`."
+        },
+        "dojo.sanitizers": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Build tests with AddressSanitizer and UndefinedBehaviorSanitizer when the compiler supports them. They turn out-of-bounds access, use-after-free and signed overflow into readable errors."
+        },
+        "dojo.go.path": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Path to the `go` binary (for example `/usr/local/go/bin/go`). Leave empty to use `GO`, `GOROOT`, `PATH` and the usual install folders. Go 1.22 or newer is required."
+        },
+        "dojo.go.race": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Build Go tests and programs with the race detector when this machine can (it needs cgo and a C compiler). It reports unsynchronised access to shared memory."
+        },
+        "dojo.tutor.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the tutor chat. Requires a local Ollama server."
+        },
+        "dojo.tutor.ollamaUrl": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Base URL of your Ollama server. Leave empty to use `OLLAMA_URL`, `OLLAMA_HOST`, or `http://127.0.0.1:11434`."
+        },
+        "dojo.tutor.model": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Ollama model used by the tutor, for example `qwen2.5-coder:7b`. Leave empty to use the first installed model."
+        },
+        "dojo.tutor.mode": {
+          "type": "string",
+          "enum": [
+            "socratic",
+            "explain",
+            "code"
+          ],
+          "enumDescriptions": [
+            "Asks questions and gives nudges, never the solution.",
+            "Explains concepts with other examples, never the solution.",
+            "May show code, then asks you to retype it from memory."
+          ],
+          "default": "socratic",
+          "description": "How the tutor helps."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "node --import tsx --test test/*.test.ts",
+    "verify": "tsx scripts/verify.ts",
+    "package": "npm run build && vsce package",
+    "vscode:prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.0",
+    "@types/vscode": "1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.24.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
   }
 }
