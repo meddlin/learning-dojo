@@ -1,6 +1,8 @@
 'use strict';
 // Progress tracking with simple spaced repetition. Stored in progress.json at
-// the project root; writes are atomic (temp file + rename).
+// the project root; writes are atomic (temp file + rename). Exercise ids repeat
+// across languages (both have f01...), so entries are keyed "<language>:<id>".
+// `forLanguage(lang)` returns the per-exercise functions bound to one language.
 
 const fs = require('fs');
 const path = require('path');
@@ -24,6 +26,13 @@ function load() {
   cache.version = 1;
   cache.exercises = cache.exercises || {};
   cache.settings = cache.settings || {};
+  // Progress written before languages existed used bare C++ exercise ids.
+  for (const k of Object.keys(cache.exercises)) {
+    if (!k.includes(':')) {
+      cache.exercises[`cpp:${k}`] = cache.exercises[k];
+      delete cache.exercises[k];
+    }
+  }
   return cache;
 }
 
@@ -134,4 +143,15 @@ function setSettings(patch) {
   return getSettings();
 }
 
-module.exports = { view, recordTestRun, useHint, markRevealed, startReview, getSettings, setSettings };
+function forLanguage(langId) {
+  const k = (id) => `${langId}:${id}`;
+  return {
+    view: (id) => view(k(id)),
+    recordTestRun: (id, passedAll) => recordTestRun(k(id), passedAll),
+    useHint: (id, total) => useHint(k(id), total),
+    markRevealed: (id) => markRevealed(k(id)),
+    startReview: (id) => startReview(k(id)),
+  };
+}
+
+module.exports = { forLanguage, getSettings, setSettings };

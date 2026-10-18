@@ -23,7 +23,7 @@ const MODE_RULES = {
   explain: [
     'You are in EXPLAIN mode. The learner wants to understand a concept properly.',
     '- Explain clearly and concretely, with small examples on toy problems that are different from the exercise itself.',
-    '- Connect ideas to what they already know from other C-style languages, and call out where C and C++ differ (memory, undefined behaviour, value semantics).',
+    '- {{connect}}',
     '- Do NOT write the solution to the current exercise. Explain the ideas, then invite them to try.',
   ],
   code: [
@@ -38,12 +38,12 @@ function clip(text, max) {
   return s.length > max ? `${s.slice(0, max)}\n... (truncated)` : s;
 }
 
-function systemPrompt({ exercise, prompt, mode, code, output }) {
-  const rules = MODE_RULES[mode] || MODE_RULES.socratic;
+function systemPrompt({ language, exercise, prompt, mode, code, output }) {
+  const rules = (MODE_RULES[mode] || MODE_RULES.socratic).map((r) => r.replace('{{connect}}', language.tutor.connect));
   const parts = [
-    'You are the tutor inside "C++ Dojo", a local learning environment for C and C++, data structures and algorithms (graph traversal, then matrix transforms).',
-    'The learner is an experienced programmer who knows C-style syntax but has never written substantial C or C++. They want to be able to write these programs themselves, so teaching beats telling.',
-    'Be concise: short paragraphs, plain language, no filler. Use fenced code blocks for code. Mention undefined behaviour, ownership and lifetimes when they matter.',
+    `You are the tutor inside "${language.label} Dojo", ${language.tutor.course}.`,
+    `The learner is ${language.tutor.learner}. They want to be able to write these programs themselves, so teaching beats telling.`,
+    `Be concise: short paragraphs, plain language, no filler. Use fenced code blocks for code. ${language.tutor.style}`,
     '',
     ...rules,
     '',
@@ -51,12 +51,12 @@ function systemPrompt({ exercise, prompt, mode, code, output }) {
     'Exercise statement:',
     clip(prompt, 6000),
   ];
-  if (code) parts.push('', "The learner's current code:", '```cpp', clip(code, 8000), '```');
+  if (code) parts.push('', "The learner's current code:", `\`\`\`${language.fenceTags[0]}`, clip(code, 8000), '```');
   if (output) parts.push('', 'The most recent terminal output (compiler or test run):', '```', clip(output, 3000), '```');
   return parts.join('\n');
 }
 
-function buildMessages(body, exercise, prompt) {
+function buildMessages(body, language, exercise, prompt) {
   const history = Array.isArray(body.messages) ? body.messages.slice(-12) : [];
   const cleaned = history
     .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
@@ -65,6 +65,7 @@ function buildMessages(body, exercise, prompt) {
     {
       role: 'system',
       content: systemPrompt({
+        language,
         exercise,
         prompt,
         mode: body.mode,
