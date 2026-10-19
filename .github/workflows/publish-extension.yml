@@ -1,0 +1,70 @@
+name: Publish extension
+
+# Push a tag like v0.1.1 (it must equal "v" + package.json version) to publish.
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: write # create the GitHub Release
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }} # optional; Open VSX is skipped when unset
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # needed for the "tag is on main" check
+
+      - name: Tag must be on main
+        run: |
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main \
+            || { echo "::error::$GITHUB_REF_NAME is not on main"; exit 1; }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # The runner tests use real toolchains and skip themselves when one is missing.
+      # ubuntu-latest ships g++; pin Go so the Go tests actually run (needs 1.22+).
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - run: npm ci
+
+      - name: Tag matches package.json
+        run: |
+          PKG="v$(node -p "require('./package.json').version")"
+          [ "$PKG" = "$GITHUB_REF_NAME" ] \
+            || { echo "::error::Tag $GITHUB_REF_NAME != package.json $PKG"; exit 1; }
+
+      - run: npm run typecheck
+      - run: npm test
+
+      # vscode:prepublish runs the esbuild bundle, so no separate build step.
+      # Drop --skip-license once a LICENSE file exists.
+      - name: Package
+        run: |
+          FLAGS=""
+          [ -f LICENSE ] || FLAGS="--skip-license"
+          npx vsce package $FLAGS -o learning-dojo.vsix
+          npx vsce ls | head -50
+
+      - name: Publish to Visual Studio Marketplace
+        run: npx vsce publish --packagePath learning-dojo.vsix
+
+      - name: Publish to Open VSX
+        if: ${{ env.OVSX_PAT != '' }}
+        run: npx ovsx publish learning-dojo.vsix -p "$OVSX_PAT"
+
+      # Same .vsix, for installing without the marketplace:
+      #   code --install-extension learning-dojo.vsix
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: learning-dojo.vsix
+          generate_release_notes: true
