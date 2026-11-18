@@ -1,0 +1,11 @@
+{
+  "title": "Stacks and queues",
+  "summary": "A list as a stack, collections.deque as a queue, bounded deques, and two classic algorithms built on them.",
+  "concepts": ["list as stack", "collections.deque", "popleft", "maxlen", "rotate", "breadth-first search"],
+  "minutes": 35,
+  "hints": [
+    "`balanced`: push every opening bracket on a list; on a closing bracket, the stack must be non-empty and `stack.pop()` must be its partner (a dict like `{\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}` helps). At the end the stack must be empty. Ignore other characters.",
+    "`eval_rpn`: numbers go on the stack; an operator pops `b` first, then `a`, and pushes `a op b`. For `/` use `int(a / b)` to truncate toward zero. `RecentLog`: keep `self._items = deque(maxlen=maxlen)`; `add` appends, and `items` returns `list(self._items)`.",
+    "`last_standing`: `q = deque(names)`; while more than one remains, `q.rotate(-(k - 1))` brings the k-th person to the front, then `q.popleft()` removes them. `bfs_order`: `queue = deque([start])`, a `seen = {start}` set, and `popleft` in a loop, appending unseen neighbours in the order they are listed."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Group by and aggregate",
+  "summary": "Split-apply-combine: groupby with sum, size and named aggregation, the best row per group, transform, and filtering groups.",
+  "concepts": ["groupby", "agg / named aggregation", "size vs count", "reset_index", "idxmax per group", "transform"],
+  "minutes": 35,
+  "hints": [
+    "`revenue_by_region`: `df.groupby(\"region\")[\"revenue\"].sum()` is a Series indexed by region (sorted). Named aggregation builds several columns at once: `df.groupby(\"region\").agg(orders=(\"revenue\", \"size\"), units=(\"units\", \"sum\"), avg_revenue=(\"revenue\", \"mean\"))`, then `.round({\"avg_revenue\": 2}).reset_index()` turns the region index back into a column.",
+    "`top_rep_by_region`: total per (region, rep) with `df.groupby([\"region\", \"rep\"])[\"revenue\"].sum()`, then on that Series `groupby(level=\"region\").idxmax()` returns `(region, rep)` pairs for the best rep of each region; build the dict from them.",
+    "`add_region_share`: `df.groupby(\"region\")[\"revenue\"].transform(\"sum\")` is the region total repeated on every row, aligned with `df`, so `(df[\"revenue\"] / totals).round(3)` works. `regions_with_at_least`: `sizes = df.groupby(\"region\").size()`, then `sizes[sizes >= n].index.tolist()`."
+  ]
+}

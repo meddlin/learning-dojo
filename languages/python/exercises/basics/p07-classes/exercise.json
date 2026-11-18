@@ -1,0 +1,11 @@
+{
+  "title": "Classes and dataclasses",
+  "summary": "Classes with __init__ and methods, read-only properties, __repr__, operator methods and frozen dataclasses.",
+  "concepts": ["class and self", "__init__ / __repr__", "@property", "@classmethod", "dataclasses", "operator overloading"],
+  "minutes": 35,
+  "hints": [
+    "In `BankAccount.__init__`, store the balance in an attribute with a leading underscore (`self._balance`) and start `self.history = []`. A read-only property is a method decorated with `@property` that returns `self._balance`; with no setter, `account.balance = 5` raises `AttributeError`.",
+    "`deposit` and `withdraw` validate first (raise `ValueError`), then change `self._balance` and append a tuple like `(\"deposit\", amount)` to `self.history`. `__repr__` should return `f\"BankAccount({self.owner!r}, {self._balance})\"`; `!r` adds the quotes.",
+    "`Vector` is already a frozen dataclass, so `==` and `repr` come for free. `__add__(self, other)` returns `Vector(self.x + other.x, self.y + other.y)`; `__mul__(self, k)` scales both parts; `length` is `math.hypot(self.x, self.y)`. `from_tuple` is a `@classmethod`: `return cls(*pair)`."
+  ]
+}

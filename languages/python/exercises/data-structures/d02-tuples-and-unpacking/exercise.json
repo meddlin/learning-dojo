@@ -1,0 +1,11 @@
+{
+  "title": "Tuples and unpacking",
+  "summary": "Immutable records, multiple assignment, starred unpacking, zip, namedtuple, and sorting by several keys.",
+  "concepts": ["tuples", "unpacking", "starred assignment", "zip", "namedtuple", "sort keys"],
+  "minutes": 25,
+  "hints": [
+    "`min_max`: raise `ValueError` for an empty input, then `return min(values), max(values)`: the comma makes a tuple. `head_tail`: starred assignment does it in one line: `first, *rest = items`; return `(first, rest)`.",
+    "`parse_point`: `x, y = text.split(\",\")` then `Point(int(x), int(y))` (`int` ignores surrounding spaces). `Point` is already defined with `namedtuple`, so `p.x`, `p.y` and `x, y = p` all work. `transpose`: `zip(*pairs)` turns rows into columns; wrap it, `tuple(zip(*pairs))`.",
+    "`rank`: sort with a key that returns a tuple; tuples compare item by item. Highest score first, then name A to Z: `sorted(records, key=lambda r: (-r[1], r[0]))`. Unpacking the pair inside the loop of `swap_pairs` reads well: `[(b, a) for a, b in pairs]`."
+  ]
+}

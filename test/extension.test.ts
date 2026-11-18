@@ -311,6 +311,89 @@ test('switching language with no argument asks, and opening a Go file switches t
   world.quickPickAnswer = (items) => items[0];
 });
 
+const PY_ID = 'p01-numbers-and-variables';
+const pySolution = () => path.join(dojo, 'python', 'basics', PY_ID, 'solution.py');
+const pythonCmd = process.env.PYTHON || 'python3';
+const hasPython = () => {
+  const r = require('node:child_process').spawnSync(pythonCmd, ['-c', 'import sys; print(sys.version_info >= (3, 10))'], { encoding: 'utf8' });
+  return r.status === 0 && r.stdout.trim() === 'True';
+};
+
+test('switching to Python shows its four tracks and 30 exercises', async () => {
+  if (process.env.PYTHON) world.config.set('dojo.python.path', process.env.PYTHON);
+  await cmd('dojo.switchLanguage', 'python');
+  assert.equal(world.contexts.get('dojo.language'), 'python');
+  const tree = world.treeViews.find((t) => t.id === 'dojo.path').opts.treeDataProvider;
+  assert.deepEqual(tree.getChildren().map((t: any) => t.track.id), ['basics', 'data-structures', 'files', 'pandas']);
+  assert.equal(world.treeViews.find((t) => t.id === 'dojo.path').description, 'Python');
+  assert.match(world.statusBar[0].text, /0\/30/);
+  assert.equal(world.controllers[0].items.get('track:basics').children.size, 7);
+});
+
+test('Python: tests fail on the starter, pass with the reference, and Test Explorer items match', { skip: !hasPython() && 'no Python 3.10+' }, async () => {
+  await cmd('dojo.openExercise', PY_ID);
+  assert.ok(fs.existsSync(pySolution()), 'solution.py created');
+  let state = world.panels.at(-1).posted.at(-1).state;
+  assert.equal(state.exercise.language, 'Python');
+
+  const before = world.runs.length;
+  await cmd('dojo.runTests');
+  assert.ok(world.runs[before].events.some((e: any) => e.k === 'failed'), 'starter must not pass');
+  state = world.panels.at(-1).posted.at(-1).state;
+  assert.equal(state.progress.status, 'started');
+  assert.ok(state.last.compiled);
+  assert.match(state.compiler, /^python 3\.\d+ · (pandas|no pandas)/, 'detection has finished by now');
+
+  fs.writeFileSync(pySolution(), fs.readFileSync(path.join(root, 'languages', 'python', 'reference', PY_ID, 'solution.py'), 'utf8'));
+  await cmd('dojo.runTests');
+  const run = world.runs.at(-1);
+  assert.ok(run.events.some((e: any) => e.k === 'passed' && e.id === `${PY_ID}::test_split_bill_evenly`), 'child test items are matched by name');
+  assert.ok(!run.events.some((e: any) => e.k === 'failed'));
+  assert.equal(world.panels.at(-1).posted.at(-1).state.progress.status, 'solved');
+  assert.match(world.statusBar[0].text, /1\/30/);
+  const saved = JSON.parse(fs.readFileSync(path.join(dojo, '.dojo', 'progress.json'), 'utf8')).exercises;
+  assert.ok(saved[`python:${PY_ID}`]?.solvedAt);
+});
+
+test('Python: Run starts the interpreter on solution.py in a terminal; syntax errors become diagnostics', { skip: !hasPython() && 'no Python 3.10+' }, async () => {
+  await cmd('dojo.run');
+  const t = world.terminals.at(-1);
+  assert.match(path.basename(t.opts.shellPath), /^python/);
+  assert.deepEqual(t.opts.shellArgs, ['-u', pySolution()]);
+  assert.equal(t.opts.cwd, path.dirname(pySolution()));
+  assert.equal(t.opts.env.PYTHONUNBUFFERED, '1');
+  t.dispose();
+
+  const good = fs.readFileSync(pySolution(), 'utf8');
+  fs.writeFileSync(pySolution(), good + '\ndef broken(:\n    pass\n');
+  const terminals = world.terminals.length;
+  await cmd('dojo.run');
+  assert.equal(world.terminals.length, terminals, 'no terminal for code with a syntax error');
+  let diags = world.diagnostics.get(Uri.file(pySolution()).toString());
+  assert.ok(diags && diags.length === 1 && /SyntaxError/.test(diags[0].message), 'Run underlines the syntax error');
+  assert.equal(diags[0].source, 'python');
+  assert.equal(diags[0].range.start.line, good.split('\n').length);
+
+  await cmd('dojo.runTests');
+  diags = world.diagnostics.get(Uri.file(pySolution()).toString());
+  assert.ok(diags && /SyntaxError/.test(diags[0].message), 'running the tests underlines it too');
+  assert.equal(world.panels.at(-1).posted.at(-1).state.last.compiled, false);
+  fs.writeFileSync(pySolution(), good);
+});
+
+test('Python: the reference solution opens with a # comment header', { skip: !hasPython() && 'no Python 3.10+' }, async () => {
+  const panel = world.panels.at(-1);
+  for (let i = 0; i < 3; i++) panel.receive({ type: 'hint' });
+  await new Promise((r) => setTimeout(r, 30));
+  panel.receive({ type: 'reveal' });
+  await new Promise((r) => setTimeout(r, 30));
+  const shown = world.shownDocs.at(-1)!;
+  assert.match(shown.uri.path, /^\/python\/p01-numbers-and-variables\/reference-solution\.py$/);
+  const text = world.documents.find((d) => d.uri.scheme === 'dojo-reference' && d.uri.path.startsWith('/python/')).getText();
+  assert.match(text, /^# Reference solution for "Numbers and variables"\.\n# Read it/);
+  await cmd('dojo.switchLanguage', 'cpp');
+});
+
 test('tutor: init reports missing Ollama, then streams a reply and stores history', async () => {
   const origFetch = globalThis.fetch;
   try {

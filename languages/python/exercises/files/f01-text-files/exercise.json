@@ -1,0 +1,11 @@
+{
+  "title": "Text files",
+  "summary": "Opening files with `with`, modes and encodings, reading line by line, writing and appending, and pathlib.",
+  "concepts": ["open() and with", "read / write / append modes", "encoding=\"utf-8\"", "iterating lines", "pathlib.Path", "glob"],
+  "minutes": 30,
+  "hints": [
+    "Open text files with `with open(path, encoding=\"utf-8\") as f:` so they are closed even if something fails. Iterating `for line in f:` gives one line at a time, each still ending in `\"\\n\"`. `count_lines`: count the lines where `line.strip()` is non-empty.",
+    "`longest_line`: `max((line.rstrip(\"\\n\") for line in f), key=len, default=\"\")`. `write_lines`: mode `\"w\"` creates or truncates; write `line + \"\\n\"` for each. `append_line`: mode `\"a\"` adds to the end and creates the file if it is missing.",
+    "`list_files`: `sorted(p.name for p in Path(folder).iterdir() if p.is_file() and p.suffix == suffix)`. `replace_in_file`: `text = Path(path).read_text(encoding=\"utf-8\")`, `count = text.count(old)`, then `write_text(text.replace(old, new), encoding=\"utf-8\")` and return `count`."
+  ]
+}

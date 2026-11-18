@@ -1,0 +1,22 @@
+[
+  {
+    "id": "basics",
+    "title": "Python Basics",
+    "blurb": "Numbers, strings, control flow, functions, exceptions, comprehensions, generators and classes: the language itself."
+  },
+  {
+    "id": "data-structures",
+    "title": "Data Structures",
+    "blurb": "Lists, tuples, dicts and sets, the collections module, stacks and queues, sorting and heaps."
+  },
+  {
+    "id": "files",
+    "title": "Files & CSV",
+    "blurb": "Reading and writing text files, the csv module, cleaning messy data, building reports and JSON."
+  },
+  {
+    "id": "pandas",
+    "title": "pandas",
+    "blurb": "DataFrames for everyday data work: loading CSVs, selecting, new columns, missing data, groupby, merging, reshaping and dates."
+  }
+]

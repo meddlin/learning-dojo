@@ -82,7 +82,7 @@ export class Exercises implements vscode.Disposable {
         }
       }),
       vscode.workspace.onDidChangeConfiguration((e) => {
-        if (['dojo.compiler', 'dojo.sanitizers', 'dojo.go.path', 'dojo.go.race'].some((k) => e.affectsConfiguration(k))) this.toolchains.reset();
+        if (['dojo.compiler', 'dojo.sanitizers', 'dojo.go.path', 'dojo.go.race', 'dojo.python.path'].some((k) => e.affectsConfiguration(k))) this.toolchains.reset();
       }),
     );
   }
@@ -100,6 +100,7 @@ export class Exercises implements vscode.Disposable {
       sanitizers: cfg.get<boolean>('sanitizers', true),
       goPath: cfg.get<string>('go.path', ''),
       goRace: cfg.get<boolean>('go.race', true),
+      pythonPath: cfg.get<string>('python.path', ''),
     };
   }
 
@@ -276,21 +277,25 @@ export class Exercises implements vscode.Disposable {
 
     const binary = path.join(work.buildDir, `${ex.language}-${ex.id}-run-${Date.now().toString(36)}${EXE}`);
     this.output.clear();
-    const result = await vscode.window.withProgress({ location: vscode.ProgressLocation.Window, title: `Compiling ${ex.title}…` }, () =>
+    const pack = LANGUAGES[ex.language];
+    const result = await vscode.window.withProgress({ location: vscode.ProgressLocation.Window, title: `${pack.buildVerb} ${ex.title}…` }, () =>
       backend.build({ tc, kind: 'run', solutionDir: work.dirOf(ex), includeDir: this.catalogs.of(ex).includeDir, outFile: binary, color: false, onOutput: (t) => this.output.append(t) }),
     );
     await this.publishDiagnostics(ex, uri, result.output, tc);
     if (!result.ok) {
       this.removeBinary(binary);
       this.output.show(true);
-      void vscode.window.showErrorMessage('Your code did not compile. The errors are underlined in the editor and listed in the Problems panel.');
+      const what = pack.buildVerb === 'Compiling' ? 'did not compile' : 'has a syntax error';
+      void vscode.window.showErrorMessage(`Your code ${what}. The errors are underlined in the editor and listed in the Problems panel.`);
       return;
     }
 
     // The program runs straight in a real terminal, so it behaves exactly as it would in your shell.
+    // Interpreted languages run the source file with their interpreter instead of a binary.
     const term = vscode.window.createTerminal({
       name: `Dojo: ${ex.title}`,
-      shellPath: binary,
+      shellPath: result.command?.path ?? binary,
+      ...(result.command ? { shellArgs: result.command.args } : {}),
       cwd: work.dirOf(ex),
       env: backend.runEnv,
       iconPath: new vscode.ThemeIcon('play'),
@@ -411,7 +416,7 @@ export class Exercises implements vscode.Disposable {
   }
 
   /** Short description of each language's toolchain, filled in once detection has finished. */
-  readonly compilerLabels: Record<LanguageId, string> = { cpp: 'checking compiler…', go: 'checking Go…' };
+  readonly compilerLabels: Record<LanguageId, string> = { cpp: 'checking compiler…', go: 'checking Go…', python: 'checking Python…' };
 
   async detectCompiler(lang: LanguageId = this.session.language): Promise<ToolchainInfo> {
     const tc = await this.toolchain(lang);
@@ -440,7 +445,8 @@ export class ReferenceProvider implements vscode.TextDocumentContentProvider {
     const catalog = isLanguageId(lang) ? this.catalogs.get(lang) : undefined;
     const ex = catalog?.find(id);
     const code = ex && catalog ? catalog.reference(ex) : null;
-    if (!ex || !code) return '// No reference solution is available for this exercise.\n';
-    return `// Reference solution for "${ex.title}".\n// Read it, close it, then write it again from memory in your own file.\n\n${code}`;
+    const c = isLanguageId(lang) ? LANGUAGES[lang].lineComment : '//';
+    if (!ex || !code) return `${c} No reference solution is available for this exercise.\n`;
+    return `${c} Reference solution for "${ex.title}".\n${c} Read it, close it, then write it again from memory in your own file.\n\n${code}`;
   }
 }

@@ -4,8 +4,8 @@
 //   * every reference solution must compile and PASS all tests;
 //   * the scratch main() in both must build, and the reference one must run.
 //
-// Usage: npm run verify [-- --lang cpp|go] [<id-prefix> ...]
-// Set CXX / GO to choose a compiler.
+// Usage: npm run verify [-- --lang cpp|go|python] [<id-prefix> ...]
+// Set CXX / GO / PYTHON to choose a toolchain (PYTHON needs pandas for the pandas track).
 
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
@@ -29,7 +29,7 @@ async function verifyLanguage(lang: LanguageId, prefixes: string[]): Promise<num
   const backend = BACKENDS[lang];
   const catalog = catalogs.get(lang);
   const pack = LANGUAGES[lang];
-  const tc = await backend.detect({ ...DEFAULT_SETTINGS, compiler: process.env.CXX ?? '', goPath: process.env.GO ?? '' });
+  const tc = await backend.detect({ ...DEFAULT_SETTINGS, compiler: process.env.CXX ?? '', goPath: process.env.GO ?? '', pythonPath: process.env.PYTHON ?? '' });
   if (!tc.cmd) return null;
   console.log(`== ${pack.label}: ${tc.version} (${backend.describe(tc)})\n`);
 
@@ -71,7 +71,9 @@ async function verifyLanguage(lang: LanguageId, prefixes: string[]): Promise<num
         const b = await backend.build({ tc, kind: 'run', solutionDir: dir, includeDir: catalog.includeDir, outFile: out, color: false });
         if (!b.ok) issues.push(`${label} main does not compile:\n${b.output}`);
         else if (mustExit0) {
-          const run = spawnSync(out, [], { timeout: 10_000, encoding: 'utf8' });
+          const run = b.command
+            ? spawnSync(b.command.path, b.command.args, { timeout: 20_000, encoding: 'utf8', cwd: dir, env: { ...process.env, ...backend.runEnv } })
+            : spawnSync(out, [], { timeout: 10_000, encoding: 'utf8' });
           if (run.status !== 0) issues.push(`reference main exited with ${run.status}:\n${run.stdout}${run.stderr}`);
         }
         cleanupBinary(out);

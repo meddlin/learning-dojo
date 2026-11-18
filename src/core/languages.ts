@@ -1,4 +1,5 @@
 import { goTestNames, prettyName } from './goOutput';
+import { pythonPrettyName, pythonTestNames } from './python';
 import type { LanguageId } from './types';
 
 export const DEFAULT_LANGUAGE: LanguageId = 'cpp';
@@ -22,6 +23,10 @@ export interface LanguagePack {
   testFile: string;
   /** Markdown fence tag used when showing this language's code. */
   fenceTag: string;
+  /** Starts a line comment ("//" or "#"). */
+  lineComment: string;
+  /** What the "Run" step is called: compiling, or only checking the syntax. */
+  buildVerb: string;
   /** Names of the test cases in a test file's source, in the order they run. */
   testNames(source: string): string[];
   /** The name a test case has in `TestResults` (and so in the UI). */
@@ -37,6 +42,8 @@ export const CPP: LanguagePack = {
   solutionFile: 'solution.cpp',
   testFile: 'test.cpp',
   fenceTag: 'cpp',
+  lineComment: '//',
+  buildVerb: 'Compiling',
   testNames: (src) => [...src.matchAll(/^\s*TEST\(\s*([A-Za-z_]\w*)\s*\)/gm)].map((m) => m[1]),
   resultName: (name) => name,
   tutor: {
@@ -56,6 +63,8 @@ export const GO: LanguagePack = {
   solutionFile: 'solution.go',
   testFile: 'solution_test.go',
   fenceTag: 'go',
+  lineComment: '//',
+  buildVerb: 'Compiling',
   testNames: goTestNames,
   resultName: prettyName,
   tutor: {
@@ -68,7 +77,30 @@ export const GO: LanguagePack = {
   },
 };
 
-export const LANGUAGES: Record<LanguageId, LanguagePack> = { cpp: CPP, go: GO };
+export const PYTHON: LanguagePack = {
+  id: 'python',
+  label: 'Python',
+  fileExt: 'py',
+  starterFile: 'starter.py',
+  solutionFile: 'solution.py',
+  testFile: 'test_solution.py',
+  fenceTag: 'python',
+  lineComment: '#',
+  buildVerb: 'Checking',
+  testNames: pythonTestNames,
+  resultName: pythonPrettyName,
+  tutor: {
+    course:
+      'a VS Code extension for learning Python: the basics, built-in data structures, reading and writing files such as CSV, and data analysis with pandas',
+    learner: 'an experienced programmer who wants to get fluent in Python and pandas',
+    style:
+      'Prefer idiomatic, readable Python (PEP 8, comprehensions where they help, the standard library, `with` for files) and, for pandas, vectorised operations over loops and `apply`. Mention mutability and aliasing, truthiness, and the SettingWithCopy / copy-on-write behaviour of pandas when they matter.',
+    connect:
+      'Connect ideas to what they already know from other languages, and call out where Python differs (dynamic typing, everything is an object and names are references, indentation, iterators and generators, duck typing, and for pandas: the index, dtypes and broadcasting).',
+  },
+};
+
+export const LANGUAGES: Record<LanguageId, LanguagePack> = { cpp: CPP, go: GO, python: PYTHON };
 export const LANGUAGE_IDS = Object.keys(LANGUAGES) as LanguageId[];
 
 export function isLanguageId(value: unknown): value is LanguageId {

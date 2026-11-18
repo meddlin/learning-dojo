@@ -1,0 +1,11 @@
+{
+  "title": "Reading and writing CSV with pandas",
+  "summary": "pd.read_csv and its most useful options (dates, separators, dtypes, missing markers, comments), and to_csv.",
+  "concepts": ["pd.read_csv", "parse_dates", "sep and decimal", "dtype and usecols", "index_col", "na_values", "to_csv(index=False)"],
+  "minutes": 30,
+  "hints": [
+    "`load_sales`: `pd.read_csv(path, parse_dates=[\"date\"])`. `load_european`: `pd.read_csv(path, sep=\";\", decimal=\",\")` so `\"2,50\"` becomes the float 2.5.",
+    "`load_customers`: `pd.read_csv(path, usecols=[\"id\", \"name\", \"zip\"], dtype={\"zip\": str}, index_col=\"id\")`. Without `dtype`, pandas guesses `zip` is a number and `02139` loses its leading zero.",
+    "`load_scores`: `na_values=[\"n/a\", \"-\", \"missing\"]` adds to the markers pandas already treats as missing (empty fields, `NA`, `NaN`...), so the column can be numeric. `load_export`: `comment=\"#\"` skips lines that start with `#`. `save_csv`: `df.to_csv(path, index=False)`."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Cleaning a messy CSV",
+  "summary": "Real-world input: stray whitespace, a byte-order mark, blank lines, money strings, bad values and duplicates, with line-numbered error reports.",
+  "concepts": ["utf-8-sig and the BOM", "strip and normalise", "parsing money", "validation", "error reporting", "duplicates"],
+  "minutes": 40,
+  "hints": [
+    "`parse_amount`: `cleaned = text.strip().replace(\"$\", \"\").replace(\",\", \"\")`, raise `ValueError` if `cleaned` is empty, and otherwise `return float(cleaned)` (which raises `ValueError` itself for junk). Round to 2 decimals with `round(value, 2)`.",
+    "Open with `encoding=\"utf-8-sig\"` so a leading byte-order mark disappears from the first header. Read rows with `csv.reader` and loop `for line_no, row in enumerate(reader, start=2):` (the header is line 1). Skip rows where every field is blank: `if not any(field.strip() for field in row): continue`. Note: for this exercise there are no quoted line breaks, so row numbers and line numbers agree.",
+    "For each row: strip every field and zip it with the stripped headers into a dict. Check in this order: `len(row) != len(header)` -> `\"line N: expected 3 fields, got 4\"`; missing `customer` -> `\"line N: missing customer\"`; amount that `parse_amount` rejects -> `\"line N: bad amount 'xyz'\"` (use the stripped original text with `!r`); an `order_id` already seen -> `\"line N: duplicate order_id 7\"`. Otherwise title-case the customer, store the float amount and remember the id in a set."
+  ]
+}

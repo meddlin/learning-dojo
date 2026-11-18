@@ -1,0 +1,11 @@
+{
+  "title": "Counter and defaultdict",
+  "summary": "The collections module's counting and grouping tools, and when they beat a plain dict.",
+  "concepts": ["collections.Counter", "most_common", "Counter arithmetic", "defaultdict", "default factories"],
+  "minutes": 25,
+  "hints": [
+    "`letter_counts`: `Counter(ch for ch in text.lower() if ch.isalpha())`. A `Counter` is a dict subclass, so returning it is fine. `most_common_word`: `Counter(text.lower().split()).most_common(1)` returns a list with one `(word, count)` pair; ties keep first-seen order.",
+    "`is_anagram`: compare two Counters of the letters, ignoring spaces and case: `Counter(a.lower().replace(\" \", \"\")) == Counter(...)`. `combine`: start with an empty `Counter()` and call `.update(d)` for each dict; return `dict(total)`.",
+    "`index_words`: `index = defaultdict(list)`, then for `line_no, line in enumerate(lines, start=1)` and each distinct word in that line (`dict.fromkeys(line.lower().split())` keeps order and drops repeats), `index[word].append(line_no)`. Return `dict(index)`."
+  ]
+}

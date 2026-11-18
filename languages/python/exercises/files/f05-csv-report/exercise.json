@@ -1,0 +1,11 @@
+{
+  "title": "A CSV report",
+  "summary": "Group, total and rank sales data with plain Python, then write a summary CSV: the job pandas does, done by hand once.",
+  "concepts": ["aggregation with dicts", "defaultdict", "datetime.strptime", "rounding money", "sorting by value", "writing a summary"],
+  "minutes": 40,
+  "hints": [
+    "A helper that yields the rows with numbers converted keeps the rest short: `for row in csv.DictReader(f): yield row[\"region\"], int(row[\"units\"]), float(row[\"unit_price\"]), ...`. `revenue_by_region`: add `units * unit_price` into a `defaultdict(float)`, then build `{region: round(total, 2) for region, total in sorted(totals.items())}`.",
+    "`best_seller`: sum units per product in a `defaultdict(int)`, then `max(totals.items(), key=lambda kv: kv[1])` (ties: the first product seen wins, because `max` keeps the first maximum and dicts keep insertion order). `monthly_revenue`: the key is `datetime.strptime(row[\"date\"], \"%Y-%m-%d\").strftime(\"%Y-%m\")`; return it sorted by month.",
+    "`write_summary`: collect per region a small dict or list `[orders, units, revenue]`, sort with `key=lambda kv: (-kv[1][2], kv[0])`, and write rows with a `csv.writer`, formatting the revenue as `f\"{revenue:.2f}\"` so it always shows two decimals."
+  ]
+}

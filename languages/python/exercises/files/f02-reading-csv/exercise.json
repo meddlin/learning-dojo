@@ -1,0 +1,11 @@
+{
+  "title": "Reading CSV files",
+  "summary": "The csv module's reader and DictReader, why split(\",\") is not enough, and converting text fields to numbers.",
+  "concepts": ["csv.reader", "csv.DictReader", "newline=\"\"", "quoted fields", "type conversion", "header rows"],
+  "minutes": 30,
+  "hints": [
+    "Open CSV files with `open(path, newline=\"\", encoding=\"utf-8\")`; the csv module handles line endings itself. `read_rows`: `return list(csv.reader(f))`. `read_records`: `return list(csv.DictReader(f))`; DictReader uses the first row as the keys.",
+    "Every field comes back as a string. `column_total`: `sum(float(row[column]) for row in csv.DictReader(f))`. A missing column raises `KeyError` by itself, which is what the tests want.",
+    "`find_by`: a list comprehension over `csv.DictReader(f)` keeping rows where `row[column] == value`. `headers`: `next(csv.reader(f), [])` reads just the first row (or gives `[]` for an empty file) without reading the rest."
+  ]
+}

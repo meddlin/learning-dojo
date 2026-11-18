@@ -1,0 +1,11 @@
+{
+  "title": "Sets",
+  "summary": "Unordered collections of unique items: fast membership and the set algebra of union, intersection and difference.",
+  "concepts": ["set literals", "membership", "union / intersection / difference", "symmetric difference", "frozenset", "subsets"],
+  "minutes": 20,
+  "hints": [
+    "`has_duplicates`: a set drops repeats, so compare sizes: `len(set(items)) != len(items)`. `common`: `set(a) & set(b)`. `only_in_first`: `set(a) - set(b)`. `in_exactly_one`: the symmetric difference `^`.",
+    "`missing_numbers`: build the full set with `set(range(1, n + 1))`, subtract `set(nums)`, and return `sorted(...)` so the result is an ordered list. `unique_letters`: `len(set(word.lower())) == len(word)`.",
+    "`shared_by_all`: return `set()` for an empty list. Otherwise start from a copy of the first set and intersect with the others: `set.intersection(*groups)` does it in one call. `is_subset`: `set(small) <= set(big)` (or `.issubset`)."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Merging and concatenating",
+  "summary": "Joining tables on a key with merge (inner, left, indicator), finding rows with no match, and stacking frames with concat.",
+  "concepts": ["pd.merge", "how=inner / left / outer", "indicator=True", "validate", "pd.concat", "ignore_index"],
+  "minutes": 35,
+  "hints": [
+    "`orders_with_customers`: `orders.merge(customers, on=\"customer_id\", how=\"inner\")` adds the customer columns to each order; then `.sort_values(\"order_id\").reset_index(drop=True)`. Orders whose customer is unknown disappear in an inner join.",
+    "`customers_without_orders`: `customers[~customers[\"customer_id\"].isin(orders[\"customer_id\"])][\"name\"].tolist()`. `unknown_customer_orders`: merge `orders` *left* onto `customers[[\"customer_id\"]]` with `indicator=True`; rows whose `_merge` is `\"left_only\"` had no match.",
+    "`revenue_by_city`: start from the customers so every city appears: `customers.merge(orders, on=\"customer_id\", how=\"left\")`, then `groupby(\"city\")[\"amount\"].sum()`; `sum` treats the NaN amounts of customers without orders as 0. `stack_months`: `pd.concat([jan.assign(month=\"jan\"), feb.assign(month=\"feb\")], ignore_index=True)`."
+  ]
+}

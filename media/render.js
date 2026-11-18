@@ -1,4 +1,4 @@
-// A small, safe Markdown renderer and C++/Go highlighter for the Learning Dojo webviews.
+// A small, safe Markdown renderer and C++/Go/Python highlighter for the Learning Dojo webviews.
 // Everything is HTML-escaped first, so model output can never inject markup.
 // Supports: headings, paragraphs, fenced code, inline code, bold, italics,
 // bullet and numbered lists, block quotes and horizontal rules.
@@ -103,7 +103,7 @@ function stripAnsi(s) {
 }
 
 // ---------------------------------------------------------------------------
-// C++ and Go syntax highlighting for fenced code blocks (colours come from CSS)
+// C++, Go and Python syntax highlighting for fenced code blocks (colours come from CSS)
 // ---------------------------------------------------------------------------
 
 const KEYWORDS = new Set(
@@ -137,6 +137,24 @@ const GO_BUILTINS = new Set('append cap clear close complex copy delete imag len
 const GO_TOKEN =
   /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`[^`]*`|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|((?!))|(\b0[xX][0-9a-fA-F_]+\b|\b0[bB][01_]+\b|\b\d[\d_]*(?:\.\d*)?(?:[eE][+-]?\d+)?\b)|([A-Za-z_]\w*)/g;
 
+const PY_KEYWORDS = new Set(
+  ('False None True and as assert async await break class continue def del elif else except finally for from global if ' +
+    'import in is lambda nonlocal not or pass raise return try while with yield match case self').split(' '),
+);
+const PY_TYPES = new Set(
+  ('int float str bool bytes list dict set frozenset tuple object type Exception ValueError TypeError KeyError IndexError ' +
+    'NotImplementedError pd np DataFrame Series csv json math os sys pathlib Path collections Counter defaultdict deque ' +
+    'namedtuple dataclass heapq itertools functools').split(' '),
+);
+const PY_BUILTINS = new Set(
+  ('abs all any enumerate filter isinstance iter len map max min next open print range reversed round sorted sum zip ' +
+    'super getattr setattr hasattr').split(' '),
+);
+
+// Python: # comments, (prefixed) triple-quoted and plain strings, decorators shown like preprocessor lines.
+const PY_TOKEN =
+  /(#[^\n]*)|((?:\b[rRbBfFuU]{1,2})?(?:'''[\s\S]*?'''|"""[\s\S]*?"""|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'))|(^[ \t]*@[\w.]+)|(\b0[xX][0-9a-fA-F_]+\b|\b0[bB][01_]+\b|\b\d[\d_]*(?:\.\d*)?(?:[eE][+-]?\d+)?j?\b)|([A-Za-z_]\w*)/gm;
+
 function colorize(code, token, keywords, types, builtins) {
   let out = '';
   let last = 0;
@@ -165,15 +183,21 @@ function highlightGo(code) {
   return colorize(code, GO_TOKEN, GO_KEYWORDS, GO_TYPES, GO_BUILTINS);
 }
 
+function highlightPython(code) {
+  return colorize(code, PY_TOKEN, PY_KEYWORDS, PY_TYPES, PY_BUILTINS);
+}
+
 const CPP_LANGS = new Set(['cpp', 'c++', 'c', 'h', 'hpp', 'cc']);
 const GO_LANGS = new Set(['go', 'golang']);
+const PY_LANGS = new Set(['python', 'py', 'python3']);
 
 function highlightAll(root) {
   for (const code of root.querySelectorAll('pre code[data-lang]')) {
     const lang = code.dataset.lang.toLowerCase();
     if (CPP_LANGS.has(lang)) code.innerHTML = highlight(code.textContent);
     else if (GO_LANGS.has(lang)) code.innerHTML = highlightGo(code.textContent);
+    else if (PY_LANGS.has(lang)) code.innerHTML = highlightPython(code.textContent);
   }
 }
 
-window.DojoRender = { md, esc, stripAnsi, highlight, highlightGo, highlightAll };
+window.DojoRender = { md, esc, stripAnsi, highlight, highlightGo, highlightPython, highlightAll };

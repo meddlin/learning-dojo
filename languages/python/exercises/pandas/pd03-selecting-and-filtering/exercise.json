@@ -1,0 +1,11 @@
+{
+  "title": "Selecting and filtering rows",
+  "summary": "Boolean masks, combining conditions with & | ~, isin, between, string matching, and .loc[rows, columns].",
+  "concepts": ["boolean masks", "& | ~ and parentheses", "isin", "between", ".str.contains", ".loc[mask, cols]", "reset_index"],
+  "minutes": 30,
+  "hints": [
+    "A comparison on a column gives a boolean Series, a *mask*: `df[\"salary\"] > threshold`. Indexing with it keeps the rows where it is True: `df[df[\"salary\"] > threshold]`. `in_departments`: `df[df[\"dept\"].isin(depts)]`.",
+    "Combine masks with `&` (and), `|` (or) and `~` (not), and put each comparison in parentheses: `(df[\"dept\"] == \"Engineering\") & (df[\"age\"] < age)`. Python's `and`/`or` do not work on Series. Then `.loc[mask, [\"name\", \"age\"]]` picks the columns, and `.reset_index(drop=True)` renumbers the rows.",
+    "`names_containing`: `df.loc[df[\"name\"].str.contains(text, case=False, regex=False), \"name\"].tolist()`. `salary_band`: `df[\"salary\"].between(low, high)` is inclusive on both ends. `max_salary_in`: `int(df.loc[df[\"city\"] == city, \"salary\"].max())`."
+  ]
+}

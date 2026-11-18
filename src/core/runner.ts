@@ -1,4 +1,4 @@
-// Types and helpers shared by the language backends (cpp.ts, go.ts).
+// Types and helpers shared by the language backends (cpp.ts, go.ts, python.ts).
 
 import type { ChildProcess } from 'child_process';
 import * as fs from 'fs';
@@ -19,7 +19,7 @@ export interface BuildRequest {
   solutionDir: string;
   /** The exercise's test file (required for kind 'test'). */
   testFile?: string;
-  /** The language's shared include folder (dojo.h, dojo_test.go). */
+  /** The language's shared include folder (dojo.h, dojo_test.go, dojo_runner.py). */
   includeDir: string;
   outFile: string;
   color: boolean;
@@ -32,6 +32,11 @@ export interface BuildResult {
   cancelled: boolean;
   /** Raw compiler output (may contain ANSI colour codes when `color` is true). */
   output: string;
+  /**
+   * How to start the program when it is not the `outFile` binary itself: interpreted
+   * languages run the source with their interpreter.
+   */
+  command?: { path: string; args: string[] };
 }
 
 export interface TestRunOptions {

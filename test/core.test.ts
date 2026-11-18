@@ -8,7 +8,8 @@ import { detectCpp, runCppTests } from '../src/core/cpp';
 import { parseCompilerOutput, parseGoOutput } from '../src/core/diagnostics';
 import { detectGo, runGoTests } from '../src/core/go';
 import { goTestNames, parseTestRun, prettyName, testMessage } from '../src/core/goOutput';
-import { CPP, GO } from '../src/core/languages';
+import { CPP, GO, PYTHON } from '../src/core/languages';
+import { detectPython, parseEvents, pythonPrettyName, pythonTestNames, runPythonTests } from '../src/core/python';
 import { LanguageProgress, ProgressStore, REVIEW_DAYS } from '../src/core/progress';
 import { BACKENDS, DEFAULT_SETTINGS, ToolchainProvider } from '../src/core/toolchain';
 import { WorkDir } from '../src/core/workdir';
@@ -17,6 +18,7 @@ import { buildMessages, ollamaBase, streamChat, listModels } from '../src/core/t
 const catalogs = new Catalogs(path.resolve(__dirname, '..', 'languages'));
 const catalog = catalogs.get('cpp');
 const goCatalog = catalogs.get('go');
+const pyCatalog = catalogs.get('python');
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), 'dojo-test-'));
 
 test('catalog (C++): three tracks, 32 exercises, unique ids, enough hints', () => {
@@ -43,6 +45,33 @@ test('catalog (Go): four tracks, 42 exercises, each with a starter, tests and a 
     assert.ok(goCatalog.reference(e), `${e.id} has a reference`);
     assert.ok(goCatalog.starter(e).includes('package main'), `${e.id} starter`);
   }
+});
+
+test('catalog (Python): four tracks, 30 exercises, each with a starter, tests and a reference', () => {
+  assert.deepEqual(pyCatalog.tracks().map((t) => t.id), ['basics', 'data-structures', 'files', 'pandas']);
+  assert.deepEqual(pyCatalog.tracks().map((t) => t.exercises.length), [7, 7, 6, 10]);
+  const all = pyCatalog.all();
+  assert.equal(new Set(all.map((e) => e.id)).size, all.length);
+  for (const e of all) {
+    assert.equal(e.language, 'python');
+    assert.ok(e.hints.length >= 3, `${e.id} hints`);
+    assert.ok(pyCatalog.testNames(e).length > 0, `${e.id} has tests`);
+    assert.ok(pyCatalog.reference(e), `${e.id} has a reference`);
+    assert.ok(pyCatalog.starter(e).includes('raise NotImplementedError'), `${e.id} starter has stubs`);
+    assert.ok(pyCatalog.starter(e).includes('if __name__ == "__main__":'), `${e.id} starter has a scratch main`);
+  }
+  assert.ok(fs.existsSync(path.join(pyCatalog.includeDir, 'dojo_runner.py')));
+  assert.ok(fs.existsSync(path.join(pyCatalog.includeDir, 'dojo_test.py')));
+});
+
+test('python: test names, pretty names and runner events', () => {
+  const src = 'from x import y\n\ndef test_split_bill(): pass\ndef helper(): pass\n    def test_nested(): pass\ndef test_two_things (): pass\n';
+  assert.deepEqual(pythonTestNames(src), ['test_split_bill', 'test_two_things']);
+  assert.equal(PYTHON.resultName('test_word_count_ignores_case'), 'word count ignores case');
+  assert.equal(pythonPrettyName('test__odd__name'), 'odd name');
+  const out = ['noise', '\x1edojo {"e":"start","tests":["test_a"]}', '\x1edojo {"e":"run","name":"test_a"}', '\x1edojo {broken', '\x1edojo {"e":"done","name":"test_a","ok":false,"message":"m"}'].join('\n');
+  assert.deepEqual(parseEvents(out).map((e) => e.e), ['start', 'run', 'done']);
+  assert.equal(pyCatalog.testNames(pyCatalog.find('p01-numbers-and-variables')!)[0], 'test_split_bill_evenly');
 });
 
 test('catalogs: C++ and Go share ids but never mix exercises', () => {
@@ -201,6 +230,14 @@ test('diagnostics: parses gcc and clang messages for solution.cpp only', () => {
   assert.match(d[0].message, /did you mean 'bar'/);
 });
 
+test('diagnostics: dojo_runner.py errors are located in solution.py', () => {
+  const out = ['$ python dojo_runner.py', "/tmp/x/solution.py:3:15: error: SyntaxError: '(' was never closed", '    def f(a, b:', '/opt/dojo/test_solution.py:1:1: error: NameError: nope'].join('\n');
+  const parsed = BACKENDS.python.diagnostics(out);
+  assert.equal(parsed.length, 1);
+  assert.deepEqual([parsed[0].line, parsed[0].column, parsed[0].severity], [3, 15, 'error']);
+  assert.match(parsed[0].message, /never closed/);
+});
+
 test('diagnostics: parses go build messages for solution.go only', () => {
   const out = [
     '# dojo',
@@ -281,6 +318,14 @@ function ndjson(lines: object[], status = 200): Response {
   });
   return new Response(body, { status });
 }
+
+test('tutor: the Python prompt talks about Python and pandas', () => {
+  const py = buildMessages([], { language: PYTHON, title: 't', prompt: 'p', mode: 'explain', code: 'x' })[0].content;
+  assert.match(py, /Python/);
+  assert.match(py, /pandas/);
+  assert.match(py, /```python/);
+  assert.doesNotMatch(py, /undefined behaviour/);
+});
 
 test('tutor: streams deltas, reports errors, lists models', async () => {
   const realFetch = globalThis.fetch;
@@ -446,4 +491,94 @@ test('toolchain provider: detection is cached per language and settings, and res
   await a;
   tp.reset();
   assert.notEqual(a, tp.get('go', { ...DEFAULT_SETTINGS, goRace: false }));
+});
+
+test('runner (Python): starter fails, reference passes, syntax and import errors are located, hangs and crashes are contained', async () => {
+  const tc = await detectPython(process.env.PYTHON ?? '');
+  if (!tc.cmd) return; // no Python on this machine
+  const root = tmp();
+  const ex = pyCatalog.find('p01-numbers-and-variables')!;
+  const names = pyCatalog.testNames(ex);
+  const common = { tc, testFile: pyCatalog.testFile(ex), includeDir: pyCatalog.includeDir, buildDir: path.join(root, 'build'), color: false };
+  const dirWith = (name: string, code: string) => {
+    const dir = path.join(root, name);
+    fs.mkdirSync(dir);
+    fs.writeFileSync(path.join(dir, 'solution.py'), code);
+    return dir;
+  };
+  const ref = fs.readFileSync(path.join(pyCatalog.referenceDir(ex), 'solution.py'), 'utf8');
+
+  const s = await runPythonTests({ ...common, solutionDir: dirWith('starter', pyCatalog.starter(ex)), tag: 's' });
+  assert.ok(s.compiled, s.output);
+  assert.ok(!s.passedAll);
+  assert.equal(s.results?.total, names.length);
+  assert.equal(s.results!.tests[0].name, PYTHON.resultName(names[0]));
+  assert.match(s.results!.tests[0].message, /split_bill\(\) is not written yet/);
+
+  const r = await runPythonTests({ ...common, solutionDir: pyCatalog.referenceDir(ex), tag: 'r' });
+  assert.ok(r.passedAll, r.output);
+  assert.equal(r.results?.failed, 0);
+  assert.deepEqual(fs.readdirSync(pyCatalog.referenceDir(ex)), ['solution.py'], 'no __pycache__ is left behind');
+
+  // A wrong answer shows expected/actual and where; a print shows up in the output.
+  const wrong = await runPythonTests({ ...common, solutionDir: dirWith('wrong', ref.replace('return (a + b + c) / 3', 'print("debugging!")\n    return (a + b + c) // 3')), tag: 'w' });
+  assert.ok(wrong.compiled && !wrong.passedAll);
+  assert.match(wrong.output, /debugging!/);
+  assert.match(wrong.results!.tests.find((t) => !t.ok)!.message, /test_solution\.py:\d+[\s\S]*expected: 2\.0[\s\S]*actual: 2\n[\s\S]*types differ/);
+
+  const bad = await runPythonTests({ ...common, solutionDir: dirWith('bad', 'def split_bill(a, b:\n    return 1\n'), tag: 'b' });
+  assert.ok(!bad.compiled);
+  const located = BACKENDS.python.diagnostics(bad.output);
+  assert.equal(located.length, 1);
+  assert.equal(located[0].line, 1);
+  assert.match(located[0].message, /SyntaxError/);
+
+  const importFails = await runPythonTests({ ...common, solutionDir: dirWith('import', ref + '\nboom = undefined_name + 1\n'), tag: 'i' });
+  assert.ok(!importFails.compiled);
+  assert.match(BACKENDS.python.diagnostics(importFails.output)[0].message, /NameError/);
+
+  const renamed = await runPythonTests({ ...common, solutionDir: dirWith('renamed', ref.replace('def digit_sum', 'def digits_sum')), tag: 'n' });
+  assert.ok(!renamed.compiled);
+  assert.match(renamed.output, /tests use `digit_sum` from solution\.py/);
+
+  // A hang and a hard crash each fail one test; the rest still run in a fresh process.
+  const hung = await runPythonTests({ ...common, solutionDir: dirWith('hang', ref.replace('return (a + b + c) / 3', 'while True:\n        pass')), tag: 'h', timeoutMs: 1500 });
+  assert.ok(hung.timedOut && !hung.passedAll, hung.output);
+  assert.equal(hung.results!.total, names.length);
+  assert.ok(hung.results!.tests.some((t) => !t.ok && /timed out/.test(t.message)));
+  assert.ok(hung.results!.tests.filter((t) => t.ok).length >= names.length - 2, hung.output);
+
+  const crashed = await runPythonTests({ ...common, solutionDir: dirWith('crash', ref.replace('return divmod(total_cents, people)', 'import os\n    os._exit(3)')), tag: 'c' });
+  assert.ok(crashed.compiled && !crashed.passedAll, crashed.output);
+  assert.equal(crashed.results!.total, names.length);
+  assert.ok(crashed.results!.tests.some((t) => !t.ok && /died/.test(t.message)), crashed.output);
+  assert.ok(crashed.results!.tests.some((t) => t.ok));
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('runner (Python): Run checks the syntax and runs the file with the interpreter; cancelling stops the tests', async () => {
+  const tc = await detectPython(process.env.PYTHON ?? '');
+  if (!tc.cmd) return;
+  const root = tmp();
+  const ex = pyCatalog.find('p01-numbers-and-variables')!;
+  const built = await BACKENDS.python.build({ tc, kind: 'run', solutionDir: pyCatalog.referenceDir(ex), includeDir: pyCatalog.includeDir, outFile: path.join(root, 'prog'), color: false });
+  assert.ok(built.ok, built.output);
+  assert.equal(built.command?.path, tc.cmd);
+  assert.deepEqual(built.command?.args, ['-u', path.join(pyCatalog.referenceDir(ex), 'solution.py')]);
+
+  const dir = path.join(root, 'spin');
+  fs.mkdirSync(dir);
+  const ref = fs.readFileSync(path.join(pyCatalog.referenceDir(ex), 'solution.py'), 'utf8');
+  fs.writeFileSync(path.join(dir, 'solution.py'), ref.replace('return divmod(total_cents, people)', 'while True:\n        pass'));
+  const broken = await BACKENDS.python.build({ tc, kind: 'run', solutionDir: dir, includeDir: pyCatalog.includeDir, outFile: path.join(root, 'prog'), color: false });
+  assert.ok(broken.ok, 'an infinite loop is not a syntax error');
+
+  const ctl = new AbortController();
+  setTimeout(() => ctl.abort(), 2000);
+  const started = Date.now();
+  const res = await runPythonTests({ tc, solutionDir: dir, testFile: pyCatalog.testFile(ex), includeDir: pyCatalog.includeDir, buildDir: path.join(root, 'build'), tag: 'x', color: false, signal: ctl.signal, timeoutMs: 20_000 });
+  assert.ok(Date.now() - started < 15_000);
+  assert.ok(!res.passedAll);
+  assert.ok(res.cancelled, res.output);
+  fs.rmSync(root, { recursive: true, force: true });
 });
