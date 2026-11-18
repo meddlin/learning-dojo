@@ -1,0 +1,11 @@
+{
+  "title": "Comprehensions and generators",
+  "summary": "List, dict and set comprehensions, generator expressions, and lazy generator functions with yield.",
+  "concepts": ["list comprehension", "dict / set comprehension", "generator expression", "yield", "laziness", "itertools.islice"],
+  "minutes": 30,
+  "hints": [
+    "The shape is always `[expression for item in iterable if condition]`. `squares_of_evens`: `[n * n for n in numbers if n % 2 == 0]`. `word_lengths`: braces and a `key: value` expression, `{w: len(w) for w in words}`. `invert`: `{v: k for k, v in d.items()}`.",
+    "`lengths_used`: a set comprehension, `{len(w) for w in words}`. `count_long`: a generator expression inside `sum`, `sum(1 for w in words if len(w) > n)`, never builds a list. `pairs`: two `for` clauses, the outer one first: `[(x, y) for x in xs for y in ys if x != y]`.",
+    "`chunked`: a function containing `yield` is a generator. Check `if size < 1: raise ValueError(...)` first, then build a `batch` list, `yield batch` whenever it reaches `size` and start a new one; after the loop, yield the leftover batch if it is not empty. `fibonacci`: `a, b = 0, 1` and `while True: yield a; a, b = b, a + b`."
+  ]
+}

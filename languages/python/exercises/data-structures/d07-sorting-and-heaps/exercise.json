@@ -1,0 +1,11 @@
+{
+  "title": "Sorting, heaps and bisect",
+  "summary": "Sort keys and stability, heapq for priority queues and top-k, and bisect for searching sorted lists.",
+  "concepts": ["sorted with key", "stable sort", "operator.itemgetter", "heapq", "priority queue", "bisect"],
+  "minutes": 35,
+  "hints": [
+    "`sort_people`: `sorted(people, key=lambda p: (p[\"age\"], p[\"name\"]))`. `k_smallest`: `heapq.nsmallest(k, nums)` already returns them in ascending order. `merge_sorted`: `list(heapq.merge(*lists))` merges any number of sorted lists lazily.",
+    "`TaskQueue`: keep a list `self._heap` and a counter. `push` does `heapq.heappush(self._heap, (priority, self._count, name))` and increments the counter: the counter breaks ties so equal priorities come out first-in, first-out (and names are never compared). `pop` returns `heapq.heappop(self._heap)[2]`; `__len__` returns `len(self._heap)`.",
+    "`grade_letters`: with `breakpoints = [60, 70, 80, 90]` and `letters = \"FDCBA\"`, `bisect.bisect_right(breakpoints, score)` is the number of breakpoints at or below the score, which is exactly the index into `letters`. `insert_sorted`: copy the list, then `bisect.insort(copy, x)`."
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "name": "learning-dojo",
   "displayName": "Learning Dojo",
-  "description": "Learn C/C++ and Go, graph traversal and matrix transforms by solving real exercises in VS Code, with tests, spaced review and an optional local AI tutor. Switch between languages with one click.",
+  "description": "Learn C/C++, Go and Python (graph traversal, matrix transforms, CSV files and pandas) by solving real exercises in VS Code, with tests, spaced review and an optional local AI tutor. Switch between languages with one click.",
   "version": "0.1.0",
   "publisher": "meddlin",
   "icon": "media/icon.png",
@@ -32,6 +32,9 @@
     "cpp",
     "go",
     "golang",
+    "python",
+    "pandas",
+    "csv",
     "learning",
     "algorithms",
     "data structures",
@@ -83,7 +86,7 @@
     "viewsWelcome": [
       {
         "view": "dojo.path",
-        "contents": "Pick a folder where your exercise files and progress will live. C++ and Go exercises each get their own subfolder.\n[Choose dojo folder](command:dojo.chooseFolder)\n[Use the open folder](command:dojo.useOpenFolder)",
+        "contents": "Pick a folder where your exercise files and progress will live. C++, Go and Python exercises each get their own subfolder.\n[Choose dojo folder](command:dojo.chooseFolder)\n[Use the open folder](command:dojo.useOpenFolder)",
         "when": "!dojo.hasFolder"
       }
     ],
@@ -101,7 +104,7 @@
       },
       {
         "command": "dojo.switchLanguage",
-        "title": "Switch Language (C++ / Go)…",
+        "title": "Switch Language (C++ / Go / Python)…",
         "category": "Dojo",
         "icon": "$(symbol-namespace)"
       },
@@ -262,6 +265,11 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "Build Go tests and programs with the race detector when this machine can (it needs cgo and a C compiler). It reports unsynchronised access to shared memory."
+        },
+        "dojo.python.path": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Path to the Python interpreter (for example a virtual environment's `.venv/bin/python`). Leave empty to use `PYTHON`, an active virtual environment, `~/.dojo-venv`, then `python3` on `PATH`, preferring one that has pandas installed. Python 3.10 or newer is required; the pandas track also needs pandas 2 or newer."
         },
         "dojo.tutor.enabled": {
           "type": "boolean",

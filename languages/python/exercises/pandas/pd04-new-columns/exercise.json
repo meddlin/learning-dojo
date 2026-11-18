@@ -1,0 +1,11 @@
+{
+  "title": "Computing new columns",
+  "summary": "Vectorised arithmetic, assign, np.where, map with a dict, the .str accessor and pd.cut, without loops and without changing the input.",
+  "concepts": ["vectorised arithmetic", "assign", "np.where", "Series.map", ".str accessor", "pd.cut", "copy vs view"],
+  "minutes": 35,
+  "hints": [
+    "`df.assign(total=...)` returns a **new** frame with the extra column and leaves `df` alone. Arithmetic on columns works element by element: `(df[\"quantity\"] * df[\"unit_price\"]).round(2)`. `add_size`: `np.where(df[\"quantity\"] >= 10, \"bulk\", \"single\")` picks per row.",
+    "`add_region`: `df[\"country\"].map(regions)` looks each value up in the dict; values that are not keys become `NaN`, so chain `.fillna(\"Other\")`. `clean_products`: `df[\"product\"].str.strip().str.title()`; each `.str` method applies a string method to every element.",
+    "`add_price_band`: `pd.cut(df[\"unit_price\"], bins=[0, 5, 15, float(\"inf\")], labels=[\"cheap\", \"mid\", \"premium\"], right=False)`. `right=False` makes each bin include its left edge, so 5.0 is `\"mid\"`. Use `.assign(...)` for this one too (or `df.copy()` before assigning)."
+  ]
+}

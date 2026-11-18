@@ -1,0 +1,11 @@
+{
+  "title": "JSON files",
+  "summary": "Loading and saving JSON, how Python types map to it, defaults and validation, and converting CSV to JSON.",
+  "concepts": ["json.load / json.dump", "loads / dumps", "indent and sort_keys", "ensure_ascii", "JSONDecodeError", "CSV to JSON"],
+  "minutes": 30,
+  "hints": [
+    "`save_pretty`: `with open(path, \"w\", encoding=\"utf-8\") as f:` then `json.dump(data, f, indent=2, sort_keys=True, ensure_ascii=False)` and `f.write(\"\\n\")`. `ensure_ascii=False` keeps `é` as `é` instead of `\\u00e9`.",
+    "`load_config`: start with `config = dict(defaults)`. If the file does not exist (`Path(path).exists()`, or catch `FileNotFoundError`), return it. Otherwise `json.load` inside `try`, catch `json.JSONDecodeError as e` and `raise ValueError(f\"{path}: invalid JSON\") from e`. Check `isinstance(loaded, dict)` before `config.update(loaded)`.",
+    "`csv_to_json`: read with `csv.DictReader`, and for each column in `numeric`, convert: `float(text)` first, then use `int(value)` if `value.is_integer()`. Empty strings become `None`. Write the list with `json.dump(records, f, indent=2)` and return `len(records)`."
+  ]
+}

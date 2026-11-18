@@ -1,0 +1,11 @@
+{
+  "title": "Lists",
+  "summary": "The workhorse sequence: mutating methods, slicing, copying versus aliasing, and lists of lists.",
+  "concepts": ["append / extend / pop", "slicing", "aliasing vs copying", "in-place vs new list", "list of lists", "sum with start"],
+  "minutes": 30,
+  "hints": [
+    "`rotate`: for an empty list return `[]`; otherwise reduce `k` with `k % len(items)` (this also turns negative `k` into the matching right rotation) and glue two slices: `items[-k:] + items[:-k]`. Careful: when `k` is 0, `items[-0:]` is the whole list.",
+    "`dedupe`: keep a `seen` set and an output list; append an item only if it is not in `seen` yet. `flatten`: `[x for inner in nested for x in inner]`. `moving_average`: for each start `i` in `range(len(values) - window + 1)`, average `values[i:i + window]`.",
+    "`make_grid`: `[[fill] * cols] * rows` repeats the *same* inner list `rows` times, so changing one cell changes every row. Build a new row each time: `[[fill] * cols for _ in range(rows)]`. `remove_all` must change the caller's list itself: assign to a full slice, `items[:] = [x for x in items if x != value]`."
+  ]
+}

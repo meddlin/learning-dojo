@@ -1,4 +1,4 @@
-export type LanguageId = 'cpp' | 'go';
+export type LanguageId = 'cpp' | 'go' | 'python';
 
 export interface TrackMeta {
   id: string;
@@ -52,15 +52,17 @@ export interface TestResults {
 }
 
 export interface ToolchainInfo {
-  /** Compiler or `go` command, or null when none was found. */
+  /** Compiler, `go` or `python` command, or null when none was found. */
   cmd: string | null;
   version: string | null;
-  /** Language standard: 'c++20' or 'c++17' for C++, 'go 1.22' for Go. */
+  /** Language standard: 'c++20' or 'c++17' for C++, 'go 1.22' for Go, 'python 3.12' for Python. */
   std: string | null;
   /** Runtime checks are on: sanitizers for C++, the race detector for Go. */
   checks: boolean;
   /** Go only: the toolchain's language version ("1.22"), used for the throw-away go.mod. */
   goLang?: string;
+  /** Python only: the installed pandas version, if any. */
+  pandas?: string;
   /** A toolchain was found but is too old, with what it reported. */
   tooOld?: string;
 }

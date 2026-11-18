@@ -1,0 +1,11 @@
+{
+  "title": "Series and DataFrames",
+  "summary": "The two pandas types: building a DataFrame, columns as Series, shape and dtypes, the index, and .loc versus .iloc.",
+  "concepts": ["pd.DataFrame", "pd.Series", "columns and dtypes", "the index", ".loc vs .iloc", "set_index"],
+  "minutes": 30,
+  "hints": [
+    "`make_people`: `pd.DataFrame({\"name\": [...], \"age\": [...], \"city\": [...]})`: a dict of column name to list of values, all lists the same length. `ages`: `df[\"age\"]` is a Series named `age`.",
+    "`shape_info`: `rows, cols = df.shape`, and `list(df.columns)` for the names. `first_and_last`: `.iloc` selects by *position*, and a list selects several rows: `df.iloc[[0, -1]]`. The index labels of those rows are kept.",
+    "`by_name`: `df.set_index(\"name\")` returns a new frame indexed by name. `row_for`: `.loc` selects by *label*, so `by_name(df).loc[name]` is one row as a Series; `.to_dict()` turns it into a plain dict. `average_age`: `float(df[\"age\"].mean())`."
+  ]
+}

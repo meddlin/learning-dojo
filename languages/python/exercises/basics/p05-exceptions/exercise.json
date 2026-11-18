@@ -1,0 +1,11 @@
+{
+  "title": "Exceptions",
+  "summary": "try/except/else/finally, raising errors, custom exception classes and exception chaining.",
+  "concepts": ["try / except", "specific exceptions", "raise", "raise ... from", "custom exceptions", "EAFP"],
+  "minutes": 25,
+  "hints": [
+    "`parse_int`: `try: return int(text.strip())` and `except ValueError: return default`. `safe_divide`: catch `ZeroDivisionError` and return `None`. Always catch the specific exception you expect, never a bare `except:`.",
+    "`InsufficientFunds`: subclass `Exception`, store `needed` and `available` on `self`, and call `super().__init__(f\"need {needed}, have {available}\")` so `str(error)` reads well. In `withdraw`, check `amount <= 0` first (raise `ValueError`), then `amount > balance` (raise `InsufficientFunds(amount, balance)`).",
+    "`parse_age`: wrap only the conversion: `try: age = int(text)` / `except ValueError as e: raise ValueError(\"age must be a whole number\") from e`. Then check the range outside the `try`. `first_error`: loop, `try: fn()` / `except Exception as e: return type(e).__name__`; return `None` after the loop."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Functions",
+  "summary": "Default and keyword arguments, *args and **kwargs, the mutable-default trap, closures and functions as values.",
+  "concepts": ["default arguments", "keyword-only arguments", "*args / **kwargs", "mutable default trap", "closures and nonlocal", "first-class functions"],
+  "minutes": 30,
+  "hints": [
+    "`greet`: a bare `*` in the parameter list makes everything after it keyword-only: `def greet(name, greeting=\"Hello\", *, punctuation=\"!\")`. `total`: `*numbers` collects the positional arguments into a tuple, so `start + sum(numbers)` works.",
+    "`add_item`: never use `items=[]` as a default, because that one list is created once and shared by every call. Use `items=None` and inside write `if items is None: items = []`. `describe`: `**fields` is a dict; `sorted(fields.items())` gives (key, value) pairs in key order.",
+    "`make_counter`: define `count = 0`, then an inner `def step():` that says `nonlocal count`, adds 1 and returns it; return `step` itself (no parentheses). `apply_n`: a plain loop `for _ in range(n): x = fn(x)`, then return `x`."
+  ]
+}

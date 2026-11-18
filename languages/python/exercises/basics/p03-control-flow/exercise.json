@@ -1,0 +1,11 @@
+{
+  "title": "Control flow",
+  "summary": "if/elif/else, truthiness, for and while loops, break and for-else, and the match statement.",
+  "concepts": ["if / elif / else", "truthiness", "for and range", "while", "enumerate", "for-else", "match"],
+  "minutes": 25,
+  "hints": [
+    "`fizzbuzz`: loop `for i in range(1, n + 1)` and test `i % 15 == 0` first (or build the word from two `if`s). `collatz_steps`: a `while n != 1:` loop with a counter; use `//` so `n` stays an int.",
+    "`first_index_over`: `for i, value in enumerate(values):` and `return i` as soon as `value > limit`; after the loop, `return -1`. `grade`: check the invalid range first with a chained comparison, `if not 0 <= score <= 100:`, then go from the highest band down with `elif`.",
+    "`respond`: `match command.split():` then patterns such as `case [\"go\", direction]:`, `case [\"look\"]:`, `case [\"take\", *things] if things:` (join the rest with spaces), `case [\"quit\" | \"exit\"]:` and a final `case _:`. Use `command.strip()` in the fallback message."
+  ]
+}

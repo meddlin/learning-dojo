@@ -1,0 +1,11 @@
+{
+  "title": "Missing data and duplicates",
+  "summary": "NaN and friends: counting, dropping and filling missing values, forward-filling within groups, and removing duplicate rows.",
+  "concepts": ["NaN / None / NA", "isna", "dropna(subset=...)", "fillna with a dict", "groupby + ffill", "drop_duplicates"],
+  "minutes": 30,
+  "hints": [
+    "`df.isna()` is a frame of booleans, and summing booleans counts the Trues: `df.isna().sum()` gives the missing count per column. Turn it into a dict of plain ints with `{col: int(n) for col, n in df.isna().sum().items()}`. `rows_with_missing`: `int(df.isna().any(axis=1).sum())`.",
+    "`drop_incomplete`: `df.dropna(subset=required)` only looks at those columns. `fill_defaults`: compute `round(df[\"temp\"].mean(), 1)` first (mean skips NaN), then `df.fillna({\"temp\": mean, \"humidity\": 0, \"note\": \"none\"})`: a dict fills each column with its own value.",
+    "`forward_fill_temps`: `df.assign(temp=df.groupby(\"sensor\")[\"temp\"].ffill())`. Grouping first stops sensor B from inheriting sensor A's last reading. `dedupe`: `df.drop_duplicates().reset_index(drop=True)` keeps the first copy of each identical row."
+  ]
+}

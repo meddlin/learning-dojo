@@ -1,0 +1,11 @@
+{
+  "title": "Strings",
+  "summary": "Immutable text: indexing, slicing, the most useful str methods, split and join.",
+  "concepts": ["indexing and slicing", "negative indices", "split / join", "str methods", "immutability", "isalnum"],
+  "minutes": 25,
+  "hints": [
+    "`reverse_words`: `text.split()` with no argument splits on any run of whitespace and drops empty pieces. Reverse the list with `[::-1]` or `reversed(...)`, then `\" \".join(...)` puts it back together.",
+    "`is_palindrome`: build a cleaned string first: `\"\".join(ch.lower() for ch in text if ch.isalnum())`. Then compare it with its reverse, `cleaned[::-1]`. `initials`: `word[0].upper()` for each word of `name.split()`, each followed by a dot.",
+    "`mask_email`: `local, _, domain = email.partition(\"@\")` splits at the first `@`. The masked local part is `local[0] + \"***\"`. `slug`: lower-case, turn every character that is not alphanumeric into a space (`ch if ch.isalnum() else \" \"`), then `\"-\".join(cleaned.split())`."
+  ]
+}

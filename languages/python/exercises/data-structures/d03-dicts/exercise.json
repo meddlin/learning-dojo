@@ -1,0 +1,11 @@
+{
+  "title": "Dictionaries",
+  "summary": "Key/value maps: get with defaults, iterating items, setdefault, merging without mutating, and nested lookups.",
+  "concepts": ["dict literals", "get with default", "items()", "setdefault", "merging dicts", "nested data"],
+  "minutes": 30,
+  "hints": [
+    "`word_count`: for each word of `text.lower().split()`, strip punctuation with `word.strip(\".,!?;:\")`, skip it if nothing is left, then `counts[word] = counts.get(word, 0) + 1`. `get` returns the default instead of raising `KeyError`.",
+    "`group_by_first_letter`: `groups.setdefault(word[0].lower(), []).append(word)` creates the list the first time a letter is seen. `merge_inventory`: start from a copy, `merged = dict(a)`, then add each `(item, n)` of `b.items()` with `merged.get(item, 0) + n`.",
+    "`top_n`: `sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:n]`. `get_path`: walk with a loop: `current = data`, and for each `key` in `path.split(\".\")`, if `current` is a dict containing `key`, step into it; otherwise return `default`."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Reshaping: pivot and melt",
+  "summary": "Long versus wide tables: pivot_table to spread values into columns, melt to gather them back, and crosstab for counts.",
+  "concepts": ["long vs wide", "pivot_table", "fill_value", "melt", "crosstab", "idxmax(axis=1)"],
+  "minutes": 30,
+  "hints": [
+    "`units_wide`: `df.pivot_table(index=\"month\", columns=\"product\", values=\"units\", aggfunc=\"sum\", fill_value=0)`. The months become the index (named `month`) and the products the columns (whose axis is named `product`). Duplicate (month, product) pairs are summed.",
+    "`to_long`: `wide.reset_index()` turns `month` back into a column, then `.melt(id_vars=\"month\", var_name=\"product\", value_name=\"units\")`. Finish with `.sort_values([\"month\", \"product\"]).reset_index(drop=True)`.",
+    "`region_product_counts`: `pd.crosstab(df[\"region\"], df[\"product\"])` counts rows per pair. `best_product_per_month`: take `units_wide(df)` and call `.idxmax(axis=1)`: for each row (month) it names the column (product) holding the maximum; `.to_dict()` gives `{month: product}`."
+  ]
+}

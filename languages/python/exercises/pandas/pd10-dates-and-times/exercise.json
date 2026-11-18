@@ -1,0 +1,11 @@
+{
+  "title": "Dates and times",
+  "summary": "to_datetime with formats and coerced errors, the .dt accessor, date arithmetic, date-range filters, and monthly resampling.",
+  "concepts": ["pd.to_datetime", "errors=\"coerce\" / NaT", ".dt accessor", "Timedelta", "date filtering", "resample"],
+  "minutes": 35,
+  "hints": [
+    "`parse_timestamps`: `df.assign(timestamp=pd.to_datetime(df[\"timestamp\"], format=\"%Y-%m-%d %H:%M\", errors=\"coerce\"))`: anything that does not match becomes `NaT`. `add_date_parts` (on parsed data): `ts = df[\"timestamp\"].dt`, then `year=ts.year`, `month=ts.month`, `weekday=ts.day_name()`.",
+    "`count_between`: compare dates, not times: `day = df[\"timestamp\"].dt.normalize()` (midnight of each day), then `day.between(pd.Timestamp(start), pd.Timestamp(end)).sum()`; wrap in `int(...)`. `late_orders`: `(pd.to_datetime(df[\"shipped\"]) - pd.to_datetime(df[\"ordered\"])).dt.days` gives whole days.",
+    "`monthly_totals`: drop rows with a missing timestamp, then `df.set_index(\"timestamp\")[\"amount\"].resample(\"MS\").sum()`. `\"MS\"` means \"month start\" bins, and months with no rows appear with 0. Build the dict with `{ts.strftime(\"%Y-%m\"): float(v) for ts, v in totals.items()}`."
+  ]
+}

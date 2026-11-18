@@ -1,0 +1,11 @@
+{
+  "title": "Numbers and variables",
+  "summary": "Names, ints that never overflow, floats, the three kinds of division, and f-string formatting.",
+  "concepts": ["dynamic typing", "int and float", "/ vs // vs %", "divmod", "f-strings", "format specs"],
+  "minutes": 20,
+  "hints": [
+    "`split_bill`: `divmod(a, b)` returns the pair `(a // b, a % b)` in one go, which is exactly (share, leftover). `average` must use true division `/`, which always returns a float, even for `6 / 3`.",
+    "`fahrenheit_label`: the conversion is `c * 9 / 5 + 32`. A format spec rounds for you: `f\"{value:.1f}\"` shows one decimal. `digit_sum`: `abs(n)` first, then either loop with `n % 10` and `n //= 10`, or turn it into a string and add up `int(ch)` for each character.",
+    "`format_money`: split into dollars and cents with `divmod(abs(cents), 100)`, then `f\"{dollars:,}.{rest:02d}\"`: `,` adds thousands separators and `02d` pads the cents to two digits. Put `-` in front when the original amount was negative."
+  ]
+}

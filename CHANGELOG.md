@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- **Python**: a third language with 30 exercises in four tracks: Python Basics (7), Data Structures (7), Files & CSV (6) and pandas (10).
+- Python tests run through a small bundled runner (no pytest needed): each test runs on its own, a crash or hang fails only that test, syntax and import errors are underlined in `solution.py`, and a missing pandas install comes with set-up instructions.
+- *Run* starts `python solution.py` in a terminal.
+- New setting `dojo.python.path`. Without it, an interpreter with pandas is preferred, and `~/.dojo-venv` is found automatically.
+- Python syntax highlighting in the exercise panel and the tutor.
+
 ## 0.1.0
 
 First release as a VS Code extension, converted from the standalone browser app.

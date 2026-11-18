@@ -1,0 +1,11 @@
+{
+  "title": "Sorting and ranking",
+  "summary": "sort_values on several columns, the top rows per group, rank, value_counts and idxmax.",
+  "concepts": ["sort_values", "ascending per column", "groupby().head(n)", "rank(method=\"dense\")", "value_counts", "idxmax"],
+  "minutes": 25,
+  "hints": [
+    "`leaderboard`: `df.sort_values([\"score\", \"minutes\", \"name\"], ascending=[False, True, True]).reset_index(drop=True)`: one `ascending` flag per column.",
+    "`top_n_per_class`: sort first (`[\"cls\", \"score\", \"name\"]` with `ascending=[True, False, True]`), then `.groupby(\"cls\").head(n)` keeps the first `n` rows of each class in the sorted order; finish with `reset_index(drop=True)`.",
+    "`add_rank`: `df[\"score\"].rank(method=\"dense\", ascending=False).astype(int)`; \"dense\" gives ties the same rank with no gaps (1, 2, 2, 3). `class_counts`: `df[\"cls\"].value_counts()` then a dict of plain ints. `best_student`: `df.loc[df[\"score\"].idxmax(), \"name\"]`."
+  ]
+}

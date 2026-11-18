@@ -1,0 +1,11 @@
+{
+  "title": "Writing CSV files",
+  "summary": "csv.writer and DictWriter, quoting done for you, filling missing fields, and filtering one CSV into another.",
+  "concepts": ["csv.writer", "csv.DictWriter", "writeheader", "restval / extrasaction", "io.StringIO", "streaming copy"],
+  "minutes": 30,
+  "hints": [
+    "Open the output with `open(path, \"w\", newline=\"\", encoding=\"utf-8\")`. `write_rows`: `w = csv.writer(f)`, `w.writerow(header)`, `w.writerows(rows)`. The writer quotes fields that contain commas or quotes on its own.",
+    "`write_records`: `csv.DictWriter(f, fieldnames=fieldnames, restval=\"\", extrasaction=\"ignore\")`, then `writeheader()` and `writerows(records)`. `restval` fills missing keys; `extrasaction=\"ignore\"` drops keys that are not in `fieldnames` instead of raising.",
+    "`to_csv_text`: write into `buf = io.StringIO()` with `csv.writer(buf, lineterminator=\"\\n\")`, then `return buf.getvalue()`. `filter_csv`: open both files in one `with`, make a `DictReader` and a `DictWriter(dst, fieldnames=reader.fieldnames)`, write the header, then each row where `keep(row[column])` is true, counting as you go."
+  ]
+}
